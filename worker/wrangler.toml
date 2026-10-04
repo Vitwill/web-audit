@@ -1,0 +1,13 @@
+# worker/wrangler.toml
+#
+# Заготовка. Реальная конфигурация (KV namespace, nodejs_compat,
+# секреты, vars) появится на Этапе 2, шаг 2.10.
+#
+# Пока файл лежит здесь, чтобы:
+# 1. Структура проекта была ясна.
+# 2. При следующем шаге мы могли добавить package.json для worker
+#    и знали, куда писать wrangler-конфигурацию.
+
+name = "web-audit"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"

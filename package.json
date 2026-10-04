@@ -1,0 +1,25 @@
+{
+  "name": "web-audit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Express web page audit & Core Web Vitals (Mobile & Desktop)",
+  "workspaces": [
+    "web",
+    "worker"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=web",
+    "dev:worker": "npm run dev --workspace=worker",
+    "build:web": "npm run build --workspace=web",
+    "deploy:worker": "npm run deploy --workspace=worker",
+    "lint": "npm run lint --workspace=web && npm run lint --workspace=worker"
+  },
+  "allowScripts": {
+    "@google/genai@2.27.0": true,
+    "protobufjs@7.6.6": true,
+    "sharp@0.33.5": true,
+    "esbuild@0.28.1": true,
+    "workerd@1.20261001.1": true
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "SEO Эксперт-Аудит Pro",
+  "description": "Профессиональный экспресс-аудит веб-страниц от SEO-эксперта: технические факторы, видимость, интенты, качество контента и рекомендации «Было / Стало».",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

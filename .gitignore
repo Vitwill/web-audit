@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Сборка
+dist/
+build/
+coverage/
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+worker/.wrangler/
+
+# Переменные окружения
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
+
+# AI Studio артефакты (пока оставляем, удалим позже)
+# metadata.json
+
+# Временный старый сервер (переносим в worker/ на Этапе 2)
+server.ts
