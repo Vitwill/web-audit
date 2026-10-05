@@ -1,13 +1,45 @@
-# worker/wrangler.toml
+# -----------------------------------------------------------------------------
+# Конфигурация Cloudflare Worker
+# -----------------------------------------------------------------------------
 #
-# Заготовка. Реальная конфигурация (KV namespace, nodejs_compat,
-# секреты, vars) появится на Этапе 2, шаг 2.10.
+# Этот файл используется `wrangler` для деплоя Worker'а.
+# После правок нужно передеплоить: `npm run deploy --workspace=worker`.
 #
-# Пока файл лежит здесь, чтобы:
-# 1. Структура проекта была ясна.
-# 2. При следующем шаге мы могли добавить package.json для worker
-#    и знали, куда писать wrangler-конфигурацию.
+# Переменные окружения:
+#   - GEMINI_API_KEY — задаётся через `wrangler secret put GEMINI_API_KEY`
+#     (не хранится в этом файле, не попадает в git).
+#
+# KV namespace RATE_LIMIT используется для rate limiting по IP.
+# Создать: `npx wrangler kv namespace create RATE_LIMIT`
+# После создания команда выведет `id`, который нужно вставить ниже.
+# -----------------------------------------------------------------------------
 
 name = "web-audit"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
+
+# Node.js-совместимость нужна для cheerio (использует Buffer, process и т.п.)
+compatibility_flags = ["nodejs_compat"]
+
+# Домен, под которым Worker будет доступен:
+#   https://web-audit.<ваш-subdomain>.workers.dev
+# Subdomain настраивается один раз в дашборде Cloudflare,
+# см. Workers & Pages → Your subdomain.
+workers_dev = true
+
+# Переменные окружения (не секреты)
+[vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "https://vitwill.github.io"
+
+# KV namespace для rate limiting.
+# ВАЖНО: замените <PLACEHOLDER> на реальный ID, который выведет
+# команда `npx wrangler kv namespace create RATE_LIMIT` (см. шаг 2.1.4).
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "1bdf08fe12fa4e3fb0ed75607c6a004e"
+
+# Настройки observability — включает логи в дашборде Cloudflare.
+# Полезно для отладки, стоит копейки (или бесплатно в free tier).
+[observability]
+enabled = true
