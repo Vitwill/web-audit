@@ -1,0 +1,78 @@
+# -----------------------------------------------------------------------------
+# GitHub Actions: сборка фронтенда и публикация на GitHub Pages
+# -----------------------------------------------------------------------------
+#
+# Что делает:
+#   1. При каждом пуше в ветку main и вручную (workflow_dispatch).
+#   2. Устанавливает Node.js 24 и npm-зависимости через `npm ci`.
+#   3. Собирает фронт: `npm run build:web` → результат в `web/dist/`.
+#   4. Публикует содержимое `web/dist/` на GitHub Pages.
+#
+# Что НЕ делает:
+#   - Не деплоит Cloudflare Worker (это отдельная задача, делается вручную
+#     через `wrangler deploy` — см. Этап 2).
+#   - Не работает с секретами (VITE_API_URL — публичное значение, лежит
+#     в web/.env.production и коммитится в репозиторий).
+# -----------------------------------------------------------------------------
+
+name: Deploy Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  # Ручной запуск из вкладки Actions
+  workflow_dispatch:
+
+# Разрешения для деплоя на GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Разрешаем только один одновременный деплой.
+# При новом пуше старая сборка отменяется, чтобы не накапливались очереди.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web
+        run: npm run build:web
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Публикуем содержимое собранного фронта
+          path: './web/dist'
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

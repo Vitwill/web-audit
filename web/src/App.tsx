@@ -15,6 +15,19 @@ import { PRESET_CASES } from './data/presets';
 import { TRANSLATIONS } from './data/translations';
 import { FileText, RotateCcw, AlertCircle, Sparkles, Send, Zap, Smartphone, Laptop, Globe } from 'lucide-react';
 
+// -----------------------------------------------------------------------------
+// API base URL
+// -----------------------------------------------------------------------------
+// В development Vite-прокси (см. vite.config.ts) перенаправит /api/* на
+// локальный Worker (http://localhost:8787), поэтому пустая строка означает
+// "тот же origin". В production переменная VITE_API_URL задаётся в .env.production
+// и указывает на https://web-audit.my-scrapers-app.workers.dev.
+//
+// Vite подставляет значение VITE_API_URL на этапе сборки. Если переменная
+// не задана — используется '' (тот же origin), что удобно для dev.
+// -----------------------------------------------------------------------------
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function App() {
   const [language, setLanguage] = useState<Language>('ru');
   const t = TRANSLATIONS[language];
@@ -79,7 +92,7 @@ export default function App() {
     }, 1500);
 
     try {
-      const response = await fetch('/api/audit', {
+      const response = await fetch(`${API_URL}/api/audit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

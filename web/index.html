@@ -3,21 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SEO Эксперт-Аудит Pro</title>
-    <meta name="description" content="Профессиональный экспресс-аудит веб-страниц от SEO-эксперта: технические факторы, видимость, интенты, качество контента и рекомендации «Было / Стало»." />
-    <meta property="og:title" content="SEO Эксперт-Аудит Pro" />
-    <meta property="og:description" content="Профессиональный экспресс-аудит веб-страниц от SEO-эксперта: технические факторы, видимость, интенты, качество контента и рекомендации «Было / Стало»." />
+
+    <title>Сайты для бизнеса | AI и задачи</title>
+
+    <meta
+      name="description"
+      content="Автоматический экспресс-аудит веб-страниц: глубокий анализ технических факторов, видимости и контента с примерами «Было / Стало»"
+    />
+
+    <meta property="og:title" content="Сайты для бизнеса | AI и задачи" />
+    <meta
+      property="og:description"
+      content="Автоматический экспресс-аудит веб-страниц: глубокий анализ технических факторов, видимости и контента с примерами «Было / Стало»"
+    />
     <meta property="og:type" content="website" />
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#efebe3" />
+
     <link rel="icon" type="image/jpeg" href="/vitwill_logo.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Восстановление пути после SPA-редиректа с GitHub Pages 404.html -->
+    <script>
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, '', l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
   </head>
   <body class="bg-[#efebe3] text-stone-900 antialiased font-sans selection:bg-emerald-200 selection:text-emerald-950">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
