@@ -33,7 +33,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
     });
   };
 
-  // Тексты интерфейса
   const text = {
     heading:
       language === 'en'
@@ -77,13 +76,13 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
         {/* ---------- Логотип-заголовок ---------- */}
         <div className="flex justify-center mb-8 sm:mb-10">
           <img
-            src="/vitwill-logo.png"
+            src={`${import.meta.env.BASE_URL}vitwill-logo.png`}
             alt="VITWILL"
             className="h-14 sm:h-20 w-auto"
           />
         </div>
 
-        {/* ---------- Крупный заголовок (уменьшен на 20%) ---------- */}
+        {/* ---------- Крупный заголовок ---------- */}
         <h1 className="text-center text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#1d1d1f] mb-4 sm:mb-6">
           {text.heading}
         </h1>

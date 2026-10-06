@@ -18,7 +18,6 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const t = TRANSLATIONS[language];
 
-  // Компактные метки языков — без эмодзи-флагов
   const languages: { code: Language; label: string }[] = [
     { code: 'ru', label: 'RU' },
     { code: 'en', label: 'EN' },
@@ -38,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center shrink-0 hover:opacity-80 transition-opacity duration-200"
           >
             <img
-              src="/vitwill-logo.png"
+              src={`${import.meta.env.BASE_URL}vitwill-logo.png`}
               alt="VITWILL"
               className="h-6 w-auto"
             />
@@ -50,7 +49,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* ---------- Справа: языки, чеклист, Telegram ---------- */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Переключатель языков — текстовый, без эмодзи */}
           <nav className="flex items-center gap-1" aria-label="Language switcher">
             {languages.map(({ code, label }) => (
               <button
@@ -69,7 +67,6 @@ export const Header: React.FC<HeaderProps> = ({
             ))}
           </nav>
 
-          {/* Чеклист — короткая текстовая ссылка */}
           {onOpenChecklistModal && (
             <button
               onClick={onOpenChecklistModal}
@@ -79,7 +76,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Telegram — акцентная кнопка */}
           <a
             href="https://t.me/sites_ai_tasks"
             target="_blank"
