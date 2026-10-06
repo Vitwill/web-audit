@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Header } from './components/Header';
 import { AuditInputPanel } from './components/AuditInputPanel';
 import { ScoreHero } from './components/ScoreHero';
@@ -14,6 +14,36 @@ import { AlertCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+// -----------------------------------------------------------------------------
+// UUID пользователя в localStorage (для учёта бесплатной квоты).
+// -----------------------------------------------------------------------------
+const USER_ID_KEY = 'web-audit:user-id';
+
+function getOrCreateUserId(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    let id = window.localStorage.getItem(USER_ID_KEY);
+    if (id && /^[a-zA-Z0-9-]{16,64}$/.test(id)) {
+      return id;
+    }
+    // Генерируем UUID v4
+    id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    window.localStorage.setItem(USER_ID_KEY, id);
+    return id;
+  } catch {
+    // localStorage может быть недоступен (приватный режим) — генерируем на сессию
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+}
+
 export default function App() {
   const [language, setLanguage] = useState<Language>('ru');
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
@@ -26,6 +56,17 @@ export default function App() {
   const [device, setDevice] = useState<DeviceType>('mobile');
   const lastParamsRef = useRef<any>(null);
   const [isChecklistModalOpen, setIsChecklistModalOpen] = useState(false);
+
+  // Квота: сколько осталось бесплатных аудитов + флаг исчерпания
+  const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
+  const [quotaExhausted, setQuotaExhausted] = useState(false);
+  const [quotaUnlimited, setQuotaUnlimited] = useState(false);
+
+  // UUID пользователя (создаётся при первом рендере)
+  const userIdRef = useRef<string>('');
+  useEffect(() => {
+    userIdRef.current = getOrCreateUserId();
+  }, []);
 
   const executeAudit = async (params: any) => {
     setIsLoading(true);
@@ -66,9 +107,17 @@ export default function App() {
     }, 2500);
 
     try {
+      // Заголовки: Content-Type + X-User-Id (для учёта квоты)
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (userIdRef.current) {
+        headers['X-User-Id'] = userIdRef.current;
+      }
+
       const response = await fetch(`${API_URL}/api/audit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           ...params,
           device: selectedDevice,
@@ -77,6 +126,36 @@ export default function App() {
       });
 
       clearInterval(stepInterval);
+
+      // Читаем квоту из заголовков ответа
+      const remainingHeader = response.headers.get('X-Quota-Remaining');
+      const subscriptionHeader = response.headers.get('X-Quota-Subscription');
+
+      if (subscriptionHeader === 'active') {
+        setQuotaUnlimited(true);
+        setQuotaRemaining(null);
+      } else if (remainingHeader === 'unlimited') {
+        setQuotaUnlimited(true);
+        setQuotaRemaining(null);
+      } else if (remainingHeader !== null) {
+        const num = parseInt(remainingHeader, 10);
+        if (!Number.isNaN(num)) {
+          setQuotaRemaining(num);
+        }
+      }
+
+      // Обрабатываем особые статусы
+      if (response.status === 402) {
+        // Квота исчерпана
+        const errorData = await response.json().catch(() => ({}));
+        setQuotaExhausted(true);
+        setQuotaRemaining(0);
+        setErrorMessage(
+          errorData.message ||
+            'Бесплатный лимит исчерпан. Оформите подписку для продолжения.'
+        );
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -142,9 +221,12 @@ export default function App() {
           onDeviceChange={setDevice}
           language={language}
           onLanguageChange={handleLanguageChange}
+          quotaRemaining={quotaRemaining}
+          quotaExhausted={quotaExhausted}
+          quotaUnlimited={quotaUnlimited}
         />
 
-        {errorMessage && (
+        {errorMessage && !quotaExhausted && (
           <div className="max-w-2xl mx-auto p-4 bg-[#fff5f5] border border-[#ffdddd] rounded-2xl text-[#c41e3a] text-sm flex items-start gap-3">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <span className="leading-relaxed">{errorMessage}</span>

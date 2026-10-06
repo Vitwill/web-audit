@@ -11,7 +11,9 @@
 //   - AuditRequest           — тело POST /api/audit
 //   - AuditResponse          — тело ответа /api/audit
 //   - ScrapeRequest          — тело POST /api/scrape
-//   - Env                    — environment bindings из wrangler.toml
+//   - RateLimitEntry         — запись rate limiting
+//   - UserQuotaEntry         — запись квоты пользователя (5 аудитов)
+//   - IpQuotaEntry           — запись квоты по IP
 // -----------------------------------------------------------------------------
 
 /**
@@ -287,4 +289,41 @@ export interface AuditResponse {
 export interface RateLimitEntry {
   count: number;
   resetAt: number;
+}
+
+// -----------------------------------------------------------------------------
+// Quota (5 бесплатных аудитов на пользователя).
+// -----------------------------------------------------------------------------
+
+/**
+ * Запись квоты пользователя в KV.
+ * Ключ: `user:<uuid>`
+ */
+export interface UserQuotaEntry {
+  /** Сколько раз пользователь уже запустил аудит */
+  used: number;
+  /** Статус подписки: 'active' — безлимит, 'none' — по квоте */
+  subscription: 'none' | 'active';
+  /** IP, с которого пользователь впервые зашёл */
+  firstIp: string;
+  /** Unix timestamp первого захода */
+  createdAt: number;
+}
+
+/**
+ * Запись квоты по IP в KV.
+ * Ключ: `ip:<ip>`
+ *
+ * Хранит список всех UUID, которые заходили с этого IP.
+ * Используется для защиты от обхода через очистку localStorage:
+ * если пользователь получил новый UUID, но остался с того же IP,
+ * мы всё равно видим его предыдущие UUID и суммируем usage.
+ */
+export interface IpQuotaEntry {
+  /** Список UUID, заходивших с этого IP */
+  uuids: string[];
+  /** Суммарный счётчик аудитов со всех UUID с этого IP */
+  totalUsed: number;
+  /** Unix timestamp первого захода с этого IP */
+  createdAt: number;
 }

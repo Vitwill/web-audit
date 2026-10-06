@@ -3,18 +3,21 @@
 // -----------------------------------------------------------------------------
 //
 // ЧТО ДЕЛАЕТ:
-//   1. Rate limit по IP.
-//   2. Скачивает страницу (если URL) или использует переданный HTML.
-//   3. Парсит HTML через cheerio.
-//   4. Считает PageSpeed метрики (mobile + desktop).
-//   5. Пытается вызвать Gemini для «умного» аудита.
-//   6. Если Gemini не ответил — использует алгоритмический fallback.
-//   7. Обогащает результат PageSpeed-метриками.
-//   8. Возвращает { success, analyzedData, audit }.
+//   1. Rate limit по IP (10/мин, защита от DDoS).
+//   2. Quota check по UUID + IP (5 бесплатных аудитов навсегда).
+//   3. Скачивает страницу (если URL) или использует переданный HTML.
+//   4. Парсит HTML через cheerio.
+//   5. Считает PageSpeed метрики (mobile + desktop).
+//   6. Пытается вызвать Gemini для «умного» аудита.
+//   7. Если Gemini не ответил — использует алгоритмический fallback.
+//   8. Обогащает результат PageSpeed-метриками.
+//   9. Списывает квоту (consumeQuota) только после успеха.
+//  10. Возвращает { success, analyzedData, audit }.
 //
 // ВАЖНО:
-//   Пользователь ВСЕГДА получает ответ, даже если Gemini недоступен.
-//   Fallback даёт менее «умные» рекомендации, но полностью рабочий аудит.
+//   - Пользователь ВСЕГДА получает ответ, даже если Gemini недоступен.
+//   - Квота списывается ТОЛЬКО при успешном аудите. Если сайт не открылся —
+//     запрос не «съедает» бесплатную попытку.
 // -----------------------------------------------------------------------------
 
 import { Env, AuditRequest, AuditResponse, ScrapedData, AuditResult } from '../types';
@@ -24,14 +27,26 @@ import { calculatePageSpeedMetrics } from '../audit/metrics';
 import { generateFallbackAudit } from '../audit/fallback';
 import { generateGeminiAudit } from '../audit/gemini';
 import { checkRateLimit, rateLimitResponse } from '../security/rateLimit';
+import {
+  checkQuota,
+  consumeQuota,
+  quotaExhaustedResponse,
+} from '../security/userQuota';
 
 // -----------------------------------------------------------------------------
 // Вспомогательная функция: JSON-ответ.
 // -----------------------------------------------------------------------------
-function jsonResponse(data: unknown, status: number = 200): Response {
+function jsonResponse(
+  data: unknown,
+  status: number = 200,
+  extraHeaders: Record<string, string> = {}
+): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      ...extraHeaders,
+    },
   });
 }
 
@@ -76,7 +91,7 @@ export async function handleAudit(
     );
   }
 
-  // 2. Rate limit
+  // 2. Rate limit (10 запросов/мин по IP)
   const rl = await checkRateLimit(request, env);
   if (!rl.allowed) {
     return rateLimitResponse(rl);
@@ -95,7 +110,13 @@ export async function handleAudit(
   const targetKeywords = body.targetKeywords?.trim() || '';
   const lang = normalizeLang(body.lang);
 
-  // 4. Определяем источник данных для парсинга
+  // 4. Проверка квоты пользователя (5 бесплатных аудитов)
+  const quota = await checkQuota(request, env);
+  if (!quota.allowed) {
+    return quotaExhaustedResponse(quota, lang);
+  }
+
+  // 5. Определяем источник данных для парсинга
   let analyzedData: Partial<ScrapedData> = {};
 
   if (htmlInput.length > 0) {
@@ -126,6 +147,7 @@ export async function handleAudit(
         );
       }
 
+      // Ошибка сети / 404 / SSRF — квоту НЕ списываем
       return jsonResponse(
         {
           success: false,
@@ -151,17 +173,17 @@ export async function handleAudit(
     );
   }
 
-  // 5. Переопределяем поля, если пользователь передал их вручную
+  // 6. Переопределяем поля, если пользователь передал их вручную
   if (body.title) analyzedData.title = body.title;
   if (body.description) analyzedData.description = body.description;
   if (typeof body.hasSsl === 'boolean') analyzedData.hasSsl = body.hasSsl;
   if (body.viewport) analyzedData.viewport = body.viewport;
   if (body.robots) analyzedData.robots = body.robots;
 
-  // 6. PageSpeed-метрики (нужны для промпта Gemini и финального ответа)
+  // 7. PageSpeed-метрики (нужны для промпта Gemini и финального ответа)
   const mobilePageSpeed = calculatePageSpeedMetrics(analyzedData, 'mobile');
 
-  // 7. Пытаемся вызвать Gemini
+  // 8. Пытаемся вызвать Gemini
   let auditResult: AuditResult | null = null;
 
   try {
@@ -177,22 +199,43 @@ export async function handleAudit(
     auditResult = null;
   }
 
-  // 8. Fallback, если Gemini не ответил
+  // 9. Fallback, если Gemini не ответил
   if (!auditResult) {
     auditResult = generateFallbackAudit(analyzedData, targetKeywords, lang);
   } else {
-    // 9. Обогащаем результат PageSpeed-метриками (Gemini их не считает)
+    // Обогащаем результат PageSpeed-метриками (Gemini их не считает)
     auditResult = applyPageSpeed(auditResult, analyzedData);
     auditResult.detectedSiteType = analyzedData.detectedSiteType;
     auditResult.language = lang;
   }
 
-  // 10. Финальный ответ
+  // 10. Списываем квоту — ТОЛЬКО после успешного аудита.
+  // Если бы аудит упал выше — до этой строки не дошли бы, квота цела.
+  try {
+    await consumeQuota(request, env);
+  } catch (err: any) {
+    // Не блокируем ответ, если списание не удалось
+    console.error('[audit] consumeQuota failed:', err?.message || err);
+  }
+
+  // 11. Пересчитываем остаток после списания (для заголовков ответа)
+  const quotaAfter = await checkQuota(request, env);
+  const remainingValue =
+    quotaAfter.subscription === 'active'
+      ? 'unlimited'
+      : String(Math.max(0, quotaAfter.remaining));
+
+  // 12. Финальный ответ
   const response: AuditResponse = {
     success: true,
     analyzedData: analyzedData as ScrapedData,
     audit: auditResult,
   };
 
-  return jsonResponse(response, 200);
+  return jsonResponse(response, 200, {
+    'X-Quota-Remaining': remainingValue,
+    'X-Quota-Limit': String(quota.limit),
+    'X-Quota-Used': String(quotaAfter.used),
+    'X-Quota-Subscription': quotaAfter.subscription,
+  });
 }
