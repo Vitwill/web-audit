@@ -1,17 +1,5 @@
 import React from 'react';
 import { AuditResult, DeviceType, Language } from '../types/seo';
-import { TRANSLATIONS } from '../data/translations';
-import {
-  Cpu,
-  Eye,
-  Users,
-  FileSpreadsheet,
-  CheckCircle2,
-  ArrowRight,
-  Sparkles,
-  Smartphone,
-  Laptop,
-} from 'lucide-react';
 
 interface FourPillarsDetailProps {
   audit: AuditResult;
@@ -28,124 +16,88 @@ export const FourPillarsDetail: React.FC<FourPillarsDetailProps> = ({
   device = 'mobile',
   language = 'ru',
 }) => {
-  const t = TRANSLATIONS[language];
   const { blocks, scores, pageSpeed, devicePageSpeed } = audit;
 
   const currentDevicePageSpeed =
-    devicePageSpeed && devicePageSpeed[device]
-      ? devicePageSpeed[device]
-      : pageSpeed;
+    devicePageSpeed && devicePageSpeed[device] ? devicePageSpeed[device] : pageSpeed;
+
+  // Локализация
+  const t = {
+    sectionTitle:
+      language === 'en'
+        ? 'Detailed breakdown'
+        : language === 'de'
+        ? 'Detaillierte Analyse'
+        : 'Детальный разбор по 4 направлениям',
+    sectionSubtitle:
+      language === 'en'
+        ? 'In-depth analysis of ranking factors with actionable recommendations'
+        : language === 'de'
+        ? 'Fundierte Bewertung aller Rankingfaktoren mit konkreten Empfehlungen'
+        : 'Глубокий анализ факторов ранжирования с практическими рекомендациями',
+    tabTech: language === 'en' ? 'Technical SEO' : language === 'de' ? 'Technisches SEO' : 'Техническое SEO',
+    tabVisibility: language === 'en' ? 'Visibility & CTR' : language === 'de' ? 'Sichtbarkeit & CTR' : 'Видимость & CTR',
+    tabIntent: language === 'en' ? 'Search Intent' : language === 'de' ? 'Suchintention' : 'Поисковый интент',
+    tabContent: language === 'en' ? 'Content & Links' : language === 'de' ? 'Inhalt & Links' : 'Контент & Ссылки',
+    findings: language === 'en' ? 'Findings' : language === 'de' ? 'Ergebnisse' : 'Выявленные факты',
+    recommendations: language === 'en' ? 'Action plan' : language === 'de' ? 'Maßnahmenplan' : 'План внедрения',
+    detectedIntent: language === 'en' ? 'Detected intent' : language === 'de' ? 'Erkannte Suchintention' : 'Определённый интент',
+    bounceRisk: language === 'en' ? 'Bounce rate risk' : language === 'de' ? 'Absprungrisiko' : 'Риск отказов',
+    keywordDensity: language === 'en' ? 'Keyword density' : language === 'de' ? 'Keyword-Dichte' : 'Плотность ключей',
+    internalLinks: language === 'en' ? 'Internal links' : language === 'de' ? 'Interne Links' : 'Внутренние ссылки',
+    ctrAnalysis: language === 'en' ? 'CTR analysis' : language === 'de' ? 'CTR-Analyse' : 'Анализ кликабельности',
+    detectedKeywords: language === 'en' ? 'Detected keywords' : language === 'de' ? 'Erkannte Keywords' : 'Определённые ключевые маркеры',
+    showMore: language === 'en' ? 'Show details' : language === 'de' ? 'Details anzeigen' : 'Смотреть графики',
+    status: language === 'en' ? 'Status' : language === 'de' ? 'Status' : 'Статус',
+    mobile: language === 'en' ? 'Mobile' : language === 'de' ? 'Mobil' : 'Смартфон',
+    desktop: language === 'en' ? 'Desktop' : language === 'de' ? 'Desktop' : 'Компьютер',
+  };
 
   const tabs = [
-    {
-      id: 0,
-      title: t.fourPillars.tabTech,
-      shortTitle: t.scoreHero.pillarTech,
-      score: scores.technical,
-      icon: Cpu,
-    },
-    {
-      id: 1,
-      title: t.fourPillars.tabVisibility,
-      shortTitle: t.scoreHero.pillarVisibility,
-      score: scores.visibility,
-      icon: Eye,
-    },
-    {
-      id: 2,
-      title: t.fourPillars.tabIntent,
-      shortTitle: t.scoreHero.pillarIntent,
-      score: scores.intent,
-      icon: Users,
-    },
-    {
-      id: 3,
-      title: t.fourPillars.tabContent,
-      shortTitle: t.scoreHero.pillarContent,
-      score: scores.content,
-      icon: FileSpreadsheet,
-    },
+    { id: 0, title: t.tabTech, score: scores.technical, block: blocks.technical },
+    { id: 1, title: t.tabVisibility, score: scores.visibility, block: blocks.visibility },
+    { id: 2, title: t.tabIntent, score: scores.intent, block: blocks.intent },
+    { id: 3, title: t.tabContent, score: scores.content, block: blocks.contentAndLinks },
   ];
 
-  const getScoreBadge = (score: number) => {
-    if (score >= 75) {
-      return {
-        text: language === 'en' ? 'Normal' : language === 'de' ? 'Gut' : 'Норма',
-        color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      };
-    }
-    if (score >= 50) {
-      return {
-        text: language === 'en' ? 'Needs Attention' : language === 'de' ? 'Optimierungsbedarf' : 'Требует внимания',
-        color: 'bg-amber-100 text-amber-800 border-amber-200',
-      };
-    }
-    return {
-      text: language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично',
-      color: 'bg-rose-100 text-rose-800 border-rose-200',
-    };
+  const getScoreColor = (score: number): string => {
+    if (score >= 75) return '#34c759';
+    if (score >= 50) return '#ff9500';
+    return '#ff3b30';
   };
 
-  const getLocalizedBlockStatus = (status: string) => {
-    const s = (status || '').toLowerCase();
-    if (s.includes('норм') || s.includes('good') || s.includes('gut') || s.includes('norm') || s.includes('оптим')) {
-      return language === 'en' ? 'Normal' : language === 'de' ? 'Gut' : 'Норма';
-    }
-    if (s.includes('вниман') || s.includes('need') || s.includes('optimier') || s.includes('улучш')) {
-      return language === 'en' ? 'Needs Attention' : language === 'de' ? 'Optimierungsbedarf' : 'Требует внимания';
-    }
-    if (s.includes('критич') || s.includes('crit') || s.includes('плохо') || s.includes('poor')) {
-      return language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично';
-    }
-    return status;
-  };
+  const currentTab = tabs[activeTab];
+  const currentBlock = currentTab.block;
 
   return (
-    <div className="bg-white border border-[#ded7cb] rounded-2xl p-6 sm:p-7 shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-[#ece7de] pb-4">
-        <div>
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-            {t.fourPillars.title}
-          </span>
-          <h3 className="text-xl font-black text-stone-900 mt-0.5">
-            {t.fourPillars.subtitle}
-          </h3>
-        </div>
-
-        <div className="flex items-center space-x-1.5 text-xs text-stone-500 font-medium bg-[#faf8f5] px-3 py-1.5 rounded-lg border border-[#ded7cb]">
-          {device === 'mobile' ? (
-            <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
-          ) : (
-            <Laptop className="w-3.5 h-3.5 text-indigo-600" />
-          )}
-          <span>{device === 'mobile' ? t.inputPanel.mobile : t.inputPanel.desktop}</span>
-        </div>
+    <section className="max-w-4xl mx-auto">
+      {/* ---------- Заголовок секции ---------- */}
+      <div className="mb-8">
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-2">
+          {t.sectionTitle}
+        </h2>
+        <p className="text-sm text-[#6e6e73]">{t.sectionSubtitle}</p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-2 mb-6">
+      {/* ---------- Табы ---------- */}
+      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          const badge = getScoreBadge(tab.score);
+          const color = getScoreColor(tab.score);
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-shrink-0 flex items-center space-x-2.5 px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition cursor-pointer ${
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-apple cursor-pointer ${
                 isActive
-                  ? 'bg-[#2d2822] border-[#2d2822] text-white shadow-sm'
-                  : 'bg-[#faf8f5] border-[#e5dfd5] text-stone-600 hover:text-stone-900 hover:bg-[#f3efe6]'
+                  ? 'bg-[#1d1d1f] text-white'
+                  : 'bg-[#f5f5f7] text-[#1d1d1f]/70 hover:text-[#1d1d1f]'
               }`}
             >
-              <Icon
-                className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-stone-500'}`}
-              />
-              <span>{tab.shortTitle}</span>
+              <span>{tab.title}</span>
               <span
-                className={`px-2 py-0.5 rounded-full text-[11px] font-bold border ${
-                  isActive ? 'bg-stone-800 text-emerald-300 border-stone-700' : badge.color
-                }`}
+                className="text-xs font-semibold"
+                style={{ color: isActive ? 'rgba(255,255,255,0.85)' : color }}
               >
                 {tab.score}%
               </span>
@@ -154,336 +106,144 @@ export const FourPillarsDetail: React.FC<FourPillarsDetailProps> = ({
         })}
       </div>
 
-      {/* Tab 0: Technical SEO */}
-      {activeTab === 0 && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#faf8f5] p-4 rounded-xl border border-[#e5dfd5]">
-            <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                {language === 'en' ? 'Pillar 1 / 4' : language === 'de' ? 'Bereich 1 / 4' : 'Блок 1 / 4'}
-              </span>
-              <h4 className="text-base font-black text-stone-900">
-                {t.fourPillars.tabTech}
-              </h4>
-              <p className="text-xs text-stone-500 mt-0.5 font-medium">
-                {t.fourPillars.techSubtitle}
-              </p>
+      {/* ---------- Содержимое активного таба ---------- */}
+      <div className="space-y-4">
+        {/* Специфичные для таба метаданные */}
+        {activeTab === 0 && currentDevicePageSpeed && (
+          <div className="p-5 bg-[#f5f5f7] rounded-2xl">
+            <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+              PageSpeed ({device === 'mobile' ? t.mobile : t.desktop})
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-stone-500 font-medium">
-                {t.fourPillars.statusLabel}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                {getLocalizedBlockStatus(blocks.technical.status)}
-              </span>
-            </div>
+            <p className="text-sm text-[#1d1d1f] leading-relaxed">
+              TTFB: <strong>{currentDevicePageSpeed.ttfb.formatted}</strong> · FCP:{' '}
+              <strong>{currentDevicePageSpeed.fcp.formatted}</strong> · LCP:{' '}
+              <strong>{currentDevicePageSpeed.lcp.formatted}</strong> · CLS:{' '}
+              <strong>{currentDevicePageSpeed.cls.formatted}</strong>
+            </p>
+            <button
+              onClick={() => {
+                const el = document.getElementById('pagespeed-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="mt-3 text-xs font-medium text-[#0071e3] hover:text-[#0077ed] transition-apple cursor-pointer"
+            >
+              {t.showMore} →
+            </button>
           </div>
+        )}
 
-          {currentDevicePageSpeed && (
-            <div className="p-4 rounded-xl bg-[#faf8f5] border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 block">
-                  {t.pagespeed.title} ({device === 'mobile' ? 'Mobile' : 'Desktop'})
+        {activeTab === 1 && blocks.visibility.detectedKeywords && blocks.visibility.detectedKeywords.length > 0 && (
+          <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+            <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-3">
+              {t.detectedKeywords}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {blocks.visibility.detectedKeywords.map((kw, i) => (
+                <span
+                  key={i}
+                  className="text-xs font-mono px-2.5 py-1 rounded-md bg-[#f5f5f7] text-[#1d1d1f]"
+                >
+                  {kw}
                 </span>
-                <p className="text-xs text-stone-600 mt-0.5">
-                  TTFB: <strong className="text-stone-900">{currentDevicePageSpeed.ttfb.formatted}</strong> • FCP: <strong className="text-stone-900">{currentDevicePageSpeed.fcp.formatted}</strong> • LCP: <strong className="text-stone-900">{currentDevicePageSpeed.lcp.formatted}</strong> • CLS: <strong className="text-stone-900">{currentDevicePageSpeed.cls.formatted}</strong>
-                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 1 && blocks.visibility.ctrAnalysis && (
+          <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+            <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+              {t.ctrAnalysis}
+            </div>
+            <p className="text-sm text-[#1d1d1f] leading-relaxed">{blocks.visibility.ctrAnalysis}</p>
+          </div>
+        )}
+
+        {activeTab === 2 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+              <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                {t.detectedIntent}
               </div>
-              <button
-                onClick={() => {
-                  const el = document.getElementById('pagespeed-section');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white hover:bg-stone-50 text-indigo-800 border border-indigo-300 transition cursor-pointer shadow-2xs self-start sm:self-auto"
-              >
-                <span>{t.fourPillars.viewDetails} →</span>
-              </button>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Findings */}
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.findings}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.technical.findings.map((finding, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-700 flex items-start space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 mt-2 flex-shrink-0" />
-                    <span>{finding}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Recommendations */}
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.recommendations}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.technical.recommendations.map((rec, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-800 font-medium flex items-start space-x-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 1: Visibility & CTR */}
-      {activeTab === 1 && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#faf8f5] p-4 rounded-xl border border-[#e5dfd5]">
-            <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                {language === 'en' ? 'Pillar 2 / 4' : language === 'de' ? 'Bereich 2 / 4' : 'Блок 2 / 4'}
-              </span>
-              <h4 className="text-base font-black text-stone-900">
-                {t.fourPillars.tabVisibility}
-              </h4>
-              <p className="text-xs text-stone-500 mt-0.5 font-medium">
-                {t.beforeAfter.subtitle}
-              </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-stone-500 font-medium">
-                {t.fourPillars.statusLabel}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800 border border-teal-200">
-                {getLocalizedBlockStatus(blocks.visibility.status)}
-              </span>
-            </div>
-          </div>
-
-          {/* Target keywords badge */}
-          {blocks.visibility.detectedKeywords && blocks.visibility.detectedKeywords.length > 0 && (
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] p-3.5 rounded-xl">
-              <span className="text-xs font-bold text-stone-600 block mb-2">
-                {t.fourPillars.keywordsFound}
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {blocks.visibility.detectedKeywords.map((kw, i) => (
-                  <span
-                    key={i}
-                    className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-white border border-[#ded7cb] text-stone-800 shadow-2xs"
-                  >
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* CTR Analysis */}
-          {blocks.visibility.ctrAnalysis && (
-            <div className="bg-[#faf8f5] border border-teal-200 p-4 rounded-xl text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
-              <strong className="text-teal-900 block mb-1">
-                {t.fourPillars.ctrPotential}
-              </strong>
-              {blocks.visibility.ctrAnalysis}
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.findings}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.visibility.findings.map((finding, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-700 flex items-start space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 mt-2 flex-shrink-0" />
-                    <span>{finding}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.recommendations}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.visibility.recommendations.map((rec, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-800 font-medium flex items-start space-x-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Intent & Behavior */}
-      {activeTab === 2 && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#faf8f5] p-4 rounded-xl border border-[#e5dfd5]">
-            <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                {language === 'en' ? 'Pillar 3 / 4' : language === 'de' ? 'Bereich 3 / 4' : 'Блок 3 / 4'}
-              </span>
-              <h4 className="text-base font-black text-stone-900">
-                {t.fourPillars.tabIntent}
-              </h4>
-              <p className="text-xs text-stone-500 mt-0.5 font-medium">
-                {t.scoreHero.pillarIntent}
-              </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-stone-500 font-medium">
-                {t.fourPillars.statusLabel}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                {getLocalizedBlockStatus(blocks.intent.status)}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] p-3.5 rounded-xl">
-              <span className="text-xs font-bold text-stone-500 block mb-1">
-                {t.fourPillars.intentIdentified}
-              </span>
-              <span className="text-sm font-bold text-stone-900">
+              <p className="text-sm font-medium text-[#1d1d1f]">
                 {blocks.intent.identifiedIntent}
-              </span>
-            </div>
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] p-3.5 rounded-xl">
-              <span className="text-xs font-bold text-stone-500 block mb-1">
-                {t.fourPillars.bounceRisk}
-              </span>
-              <span className="text-sm font-bold text-stone-900">
-                {blocks.intent.bounceRateRisk}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.findings}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.intent.findings.map((finding, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-700 flex items-start space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 mt-2 flex-shrink-0" />
-                    <span>{finding}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.recommendations}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.intent.recommendations.map((rec, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-800 font-medium flex items-start space-x-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 3: Content & Links */}
-      {activeTab === 3 && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#faf8f5] p-4 rounded-xl border border-[#e5dfd5]">
-            <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                {language === 'en' ? 'Pillar 4 / 4' : language === 'de' ? 'Bereich 4 / 4' : 'Блок 4 / 4'}
-              </span>
-              <h4 className="text-base font-black text-stone-900">
-                {t.fourPillars.tabContent}
-              </h4>
-              <p className="text-xs text-stone-500 mt-0.5 font-medium">
-                {t.scoreHero.pillarContent}
               </p>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-stone-500 font-medium">
-                {t.fourPillars.statusLabel}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
-                {getLocalizedBlockStatus(blocks.contentAndLinks.status)}
-              </span>
+            <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+              <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                {t.bounceRisk}
+              </div>
+              <p className="text-sm font-medium text-[#1d1d1f]">
+                {blocks.intent.bounceRateRisk}
+              </p>
             </div>
           </div>
+        )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {activeTab === 3 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {blocks.contentAndLinks.keywordStuffingRisk && (
-              <div className="bg-[#faf8f5] border border-[#e5dfd5] p-3.5 rounded-xl">
-                <span className="text-xs font-bold text-stone-500 block mb-1">
-                  {t.fourPillars.keywordDensity}
-                </span>
-                <span className="text-sm font-bold text-stone-900">
+              <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+                <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                  {t.keywordDensity}
+                </div>
+                <p className="text-sm font-medium text-[#1d1d1f]">
                   {blocks.contentAndLinks.keywordStuffingRisk}
-                </span>
+                </p>
               </div>
             )}
             {blocks.contentAndLinks.internalLinkingStatus && (
-              <div className="bg-[#faf8f5] border border-[#e5dfd5] p-3.5 rounded-xl">
-                <span className="text-xs font-bold text-stone-500 block mb-1">
-                  {t.fourPillars.internalLinks}
-                </span>
-                <span className="text-sm font-bold text-stone-900">
+              <div className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple">
+                <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                  {t.internalLinks}
+                </div>
+                <p className="text-sm font-medium text-[#1d1d1f]">
                   {blocks.contentAndLinks.internalLinkingStatus}
-                </span>
+                </p>
               </div>
             )}
           </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.findings}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.contentAndLinks.findings.map((finding, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-700 flex items-start space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 mt-2 flex-shrink-0" />
-                    <span>{finding}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* ---------- Findings + Recommendations ---------- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Findings */}
+          <div className="p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple">
+            <h4 className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-4">
+              {t.findings}
+            </h4>
+            <ul className="space-y-3">
+              {currentBlock.findings.map((finding, idx) => (
+                <li
+                  key={idx}
+                  className="text-sm text-[#1d1d1f] leading-relaxed flex items-start gap-3"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d2d2d7] shrink-0 mt-2" />
+                  <span>{finding}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-4">
-              <h5 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>{t.fourPillars.recommendations}</span>
-              </h5>
-              <ul className="space-y-2.5">
-                {blocks.contentAndLinks.recommendations.map((rec, idx) => (
-                  <li key={idx} className="text-xs sm:text-sm text-stone-800 font-medium flex items-start space-x-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Recommendations */}
+          <div className="p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple">
+            <h4 className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-4">
+              {t.recommendations}
+            </h4>
+            <ul className="space-y-3">
+              {currentBlock.recommendations.map((rec, idx) => (
+                <li
+                  key={idx}
+                  className="text-sm text-[#1d1d1f] leading-relaxed flex items-start gap-3"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] shrink-0 mt-2" />
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 };

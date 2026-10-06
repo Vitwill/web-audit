@@ -758,10 +758,10 @@ ${beforeAfter.map((item) => `### ${item.element}
       ? 'Möchten Sie die TOP-3 erreichen und organischen Traffic skalieren?'
       : 'Хотите вывести сайт в ТОП-3 и масштабировать органический трафик?',
     bonusText: isEn
-      ? `Express audit highlighted key growth vectors. To systematically outrank competitors, download our 50+ point actionable checklist and join the Telegram channel «${LINKS.telegram.titleEn}» (${LINKS.telegram.handle}) for live breakdowns.`
+      ? `Express audit highlighted key growth vectors. To systematically outrank competitors, download our checklist and join the Telegram channel «${LINKS.telegram.titleEn}» for live case breakdowns and practical solutions.`
       : isDe
-      ? `Das Express-Audit hat wichtige Wachstumspotenziale aufgezeigt. Laden Sie unsere 50+ Punkte Checkliste herunter und treten Sie dem Telegram-Kanal «${LINKS.telegram.titleDe}» (${LINKS.telegram.handle}) bei.`
-      : 'Экспресс-аудит выявил ключевые точки роста. Чтобы системно обойти конкурентов, скачайте наш расширенный чеклист на 50+ параметров и подпишитесь на Telegram-канал «Сайты для бизнеса | AI и задачи» (@sites_ai_tasks) со свежими кейсами и практическими решениями.',
+      ? `Das Express-Audit hat wichtige Wachstumspotenziale aufgezeigt. Laden Sie unsere Checkliste herunter und treten Sie dem Telegram-Kanal «${LINKS.telegram.titleDe}» für aktuelle Fallstudien bei.`
+      : 'Экспресс-аудит выявил ключевые точки роста. Чтобы системно обойти конкурентов, скачайте наш чеклист и подпишитесь на Telegram-канал «Сайты для бизнеса | AI и задачи» со свежими кейсами и практическими решениями.',
     telegramChannel: LINKS.telegram.handle,
     telegramUrl: LINKS.telegram.url,
     ctaOffer: isEn

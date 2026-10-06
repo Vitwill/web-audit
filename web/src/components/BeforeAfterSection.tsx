@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BeforeAfterItem, SerpPreview, DeviceType, Language } from '../types/seo';
-import { TRANSLATIONS } from '../data/translations';
-import { Copy, Check, ArrowRight, Laptop, Smartphone, Eye, Sparkles, Globe } from 'lucide-react';
+import { Copy, Check, Smartphone, Laptop, ExternalLink } from 'lucide-react';
 
 interface BeforeAfterSectionProps {
   items: BeforeAfterItem[];
@@ -18,7 +17,6 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
   onDeviceChange,
   language = 'ru',
 }) => {
-  const t = TRANSLATIONS[language];
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [serpState, setSerpState] = useState<'after' | 'before'>('after');
 
@@ -28,70 +26,92 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const getRecommendedLength = (element: string) => {
+  const getRecommendedLength = (element: string): string | null => {
     const el = element.toLowerCase();
-    if (el.includes('title')) return language === 'en' ? '50–60 chars' : language === 'de' ? '50–60 Zeichen' : '50–60 символов';
-    if (el.includes('desc')) return language === 'en' ? '140–160 chars' : language === 'de' ? '140–160 Zeichen' : '140–160 символов';
-    if (el.includes('h1')) return language === 'en' ? '30–70 chars' : language === 'de' ? '30–70 Zeichen' : '30–70 символов';
+    if (el.includes('title') || el.includes('тег title'))
+      return language === 'en' ? '50–60 chars' : language === 'de' ? '50–60 Zeichen' : '50–60 символов';
+    if (el.includes('desc') || el.includes('описание'))
+      return language === 'en' ? '140–160 chars' : language === 'de' ? '140–160 Zeichen' : '140–160 символов';
+    if (el.includes('h1'))
+      return language === 'en' ? '30–70 chars' : language === 'de' ? '30–70 Zeichen' : '30–70 символов';
     return null;
   };
 
   const isMobile = device === 'mobile';
 
+  // Локализация
+  const t = {
+    sectionTitle:
+      language === 'en'
+        ? 'Before / After'
+        : language === 'de'
+        ? 'Vorher / Nachher'
+        : 'Рекомендации «Было / Стало»',
+    sectionSubtitle:
+      language === 'en'
+        ? 'Optimized tag variants to lift your click-through rate'
+        : language === 'de'
+        ? 'Optimierte Tag-Varianten für höhere Klickraten'
+        : 'Оптимизированные варианты тегов для роста CTR',
+    copy: language === 'en' ? 'Copy' : language === 'de' ? 'Kopieren' : 'Скопировать',
+    copied: language === 'en' ? 'Copied' : language === 'de' ? 'Kopiert' : 'Скопировано',
+    before: language === 'en' ? 'Before (current)' : language === 'de' ? 'Vorher (aktuell)' : 'Было (текущий вариант)',
+    after: language === 'en' ? 'After (expert recommendation)' : language === 'de' ? 'Nachher (Empfehlung)' : 'Стало (рекомендация эксперта)',
+    reasonLabel: language === 'en' ? 'Why this works' : language === 'de' ? 'Warum das funktioniert' : 'Почему это сработает',
+    serpTitle: language === 'en' ? 'Google preview' : language === 'de' ? 'Google-Vorschau' : 'Сниппет в выдаче Google',
+    showBefore: language === 'en' ? 'Before' : language === 'de' ? 'Vorher' : 'Было',
+    showAfter: language === 'en' ? 'After' : language === 'de' ? 'Nachher' : 'Стало',
+    optimal: language === 'en' ? 'Optimal:' : language === 'de' ? 'Optimal:' : 'Оптимально:',
+    chars: language === 'en' ? 'chars' : language === 'de' ? 'Zeichen' : 'симв.',
+    mobile: language === 'en' ? 'Mobile' : language === 'de' ? 'Mobil' : 'Смартфон',
+    desktop: language === 'en' ? 'Desktop' : language === 'de' ? 'Desktop' : 'Компьютер',
+    notSpecified: language === 'en' ? 'Not specified' : language === 'de' ? 'Nicht definiert' : 'Не задан',
+  };
+
   return (
-    <div className="bg-white border border-[#ded7cb] rounded-2xl p-6 sm:p-7 shadow-xs space-y-7">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ece7de] pb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="text-lg font-black text-stone-900 flex items-center gap-2">
-              {t.beforeAfter.title}
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800 border border-teal-200">
-                {t.beforeAfter.solutionsBadge}
-              </span>
-            </h3>
-            <p className="text-xs text-stone-500 font-medium">
-              {t.beforeAfter.subtitle}
-            </p>
-          </div>
+    <section className="max-w-4xl mx-auto">
+      {/* ---------- Заголовок секции ---------- */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-2">
+            {t.sectionTitle}
+          </h2>
+          <p className="text-sm text-[#6e6e73]">{t.sectionSubtitle}</p>
         </div>
 
-        {/* Mobile / Desktop switcher for SERP */}
+        {/* Переключатель Mobile/Desktop */}
         {onDeviceChange && (
-          <div className="flex items-center space-x-1 p-1 bg-[#f3efe6] rounded-xl border border-[#ded7cb]">
+          <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full shrink-0">
             <button
               type="button"
               onClick={() => onDeviceChange('mobile')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
                 isMobile
-                  ? 'bg-white text-stone-900 shadow-2xs border border-[#ded7cb]'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-white text-[#1d1d1f] shadow-sm'
+                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
-              <span>{t.inputPanel.mobile}</span>
+              <Smartphone className="w-3 h-3" />
+              {t.mobile}
             </button>
             <button
               type="button"
               onClick={() => onDeviceChange('desktop')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
                 !isMobile
-                  ? 'bg-white text-stone-900 shadow-2xs border border-[#ded7cb]'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-white text-[#1d1d1f] shadow-sm'
+                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
               }`}
             >
-              <Laptop className="w-3.5 h-3.5 text-indigo-600" />
-              <span>{t.inputPanel.desktop}</span>
+              <Laptop className="w-3 h-3" />
+              {t.desktop}
             </button>
           </div>
         )}
       </div>
 
-      {/* Before / After Cards Grid */}
-      <div className="grid grid-cols-1 gap-5">
+      {/* ---------- Карточки Before/After ---------- */}
+      <div className="space-y-4 mb-12">
         {items.map((item, idx) => {
           const recLength = getRecommendedLength(item.element);
           const isCopied = copiedIndex === idx;
@@ -99,78 +119,83 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
           return (
             <div
               key={idx}
-              className="bg-[#faf8f5] border border-[#e5dfd5] rounded-xl p-5 hover:border-[#d5cec2] transition shadow-2xs"
+              className="p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#ece7de] pb-3 mb-4">
-                <div className="flex items-center space-x-2">
-                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#2d2822] text-white">
+              {/* Заголовок карточки: element + copy */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-sm font-semibold text-[#1d1d1f]">
                     {item.element}
                   </span>
                   {recLength && (
-                    <span className="text-[11px] text-stone-500 font-medium">
-                      {language === 'en' ? 'Target: ' : language === 'de' ? 'Ziel: ' : 'Оптимально: '}{recLength}
+                    <span className="text-xs text-[#86868b]">
+                      {t.optimal} {recLength}
                     </span>
                   )}
                 </div>
 
                 <button
                   onClick={() => copyToClipboard(item.after, idx)}
-                  className="inline-flex items-center space-x-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-white border border-[#ded7cb] text-stone-700 hover:text-stone-950 transition cursor-pointer self-start sm:self-auto"
+                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0071e3] hover:text-[#0077ed] transition-apple cursor-pointer"
                 >
                   {isCopied ? (
                     <>
-                      <Check className="w-3 h-3 text-emerald-600" />
-                      <span className="text-emerald-700 font-bold">{t.beforeAfter.copied}</span>
+                      <Check className="w-3.5 h-3.5" />
+                      {t.copied}
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3 text-stone-400" />
-                      <span>{t.beforeAfter.copy}</span>
+                      <Copy className="w-3.5 h-3.5" />
+                      {t.copy}
                     </>
                   )}
                 </button>
               </div>
 
+              {/* Было / Стало — две колонки */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Before Box */}
-                <div className="p-4 rounded-xl bg-white border border-rose-200/80 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-rose-800">
-                    <span>{t.beforeAfter.before}</span>
+                {/* Было */}
+                <div className="p-5 rounded-2xl bg-[#f5f5f7]">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-[#86868b]">
+                      {t.before}
+                    </span>
                     {item.beforeCharCount !== undefined && (
-                      <span className="text-[11px] text-rose-600 font-mono font-medium">
-                        {item.beforeCharCount} {language === 'en' ? 'chars' : language === 'de' ? 'Zeichen' : 'симв.'}
+                      <span className="text-xs font-mono text-[#86868b]">
+                        {item.beforeCharCount} {t.chars}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-700 font-medium leading-relaxed break-words line-through decoration-rose-300">
-                    {item.before || (language === 'en' ? 'Not specified' : language === 'de' ? 'Nicht definiert' : 'Не задан')}
+                  <p className="text-sm text-[#1d1d1f] leading-relaxed line-through decoration-[#d2d2d7] decoration-1">
+                    {item.before || t.notSpecified}
                   </p>
                 </div>
 
-                {/* After Box */}
-                <div className="p-4 rounded-xl bg-white border border-emerald-300 space-y-2 shadow-2xs">
-                  <div className="flex items-center justify-between text-xs font-bold text-emerald-800">
-                    <span>{t.beforeAfter.after}</span>
+                {/* Стало */}
+                <div className="p-5 rounded-2xl bg-white border border-[#0071e3]/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium uppercase tracking-wide text-[#0071e3]">
+                      {t.after}
+                    </span>
                     {item.afterCharCount !== undefined && (
-                      <span className="text-[11px] text-emerald-700 font-mono font-bold">
-                        {item.afterCharCount} {language === 'en' ? 'chars' : language === 'de' ? 'Zeichen' : 'симв.'}
+                      <span className="text-xs font-mono text-[#0071e3]">
+                        {item.afterCharCount} {t.chars}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-900 font-bold leading-relaxed break-words">
+                  <p className="text-sm text-[#1d1d1f] font-medium leading-relaxed">
                     {item.after}
                   </p>
                 </div>
               </div>
 
-              {/* Rationale explanation */}
+              {/* Почему это сработает */}
               {item.reason && (
-                <div className="mt-4 pt-3 border-t border-[#ece7de] flex items-start space-x-2 text-xs text-stone-600 leading-relaxed font-medium">
-                  <ArrowRight className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <span>
-                    <strong className="text-stone-800 mr-1">{t.beforeAfter.reason}</strong>
-                    {item.reason}
-                  </span>
+                <div className="mt-5 pt-4 border-t border-[#e5e5e7]">
+                  <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                    {t.reasonLabel}
+                  </div>
+                  <p className="text-sm text-[#1d1d1f] leading-relaxed">{item.reason}</p>
                 </div>
               )}
             </div>
@@ -178,71 +203,55 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
         })}
       </div>
 
-      {/* Visual Live SERP Simulation Box */}
+      {/* ---------- SERP Preview ---------- */}
       {serpPreview && (
-        <div className="p-5 sm:p-6 rounded-xl bg-[#faf8f5] border border-[#ded7cb] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ece7de] pb-3">
-            <div className="flex items-center space-x-2">
-              <Eye className="w-4 h-4 text-indigo-600" />
-              <h4 className="text-sm font-bold text-stone-900">
-                {t.beforeAfter.serpGoogle} ({isMobile ? t.inputPanel.mobile : t.inputPanel.desktop})
-              </h4>
-            </div>
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <h3 className="text-xs font-medium uppercase tracking-widest text-[#86868b]">
+              {t.serpTitle}
+            </h3>
 
-            <div className="flex items-center space-x-1.5 p-1 bg-white rounded-lg border border-[#ded7cb]">
-              <span className="text-xs text-stone-500 font-medium px-2">
-                {t.beforeAfter.previewToggle}
-              </span>
+            {/* Переключатель Было/Стало */}
+            <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full">
               <button
                 type="button"
                 onClick={() => setSerpState('before')}
-                className={`px-2.5 py-1 text-xs font-bold rounded cursor-pointer transition ${
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer ${
                   serpState === 'before'
-                    ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                    : 'text-stone-500 hover:text-stone-800'
+                    ? 'bg-white text-[#1d1d1f] shadow-sm'
+                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
-                {t.beforeAfter.viewBefore}
+                {t.showBefore}
               </button>
               <button
                 type="button"
                 onClick={() => setSerpState('after')}
-                className={`px-2.5 py-1 text-xs font-bold rounded cursor-pointer transition ${
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer ${
                   serpState === 'after'
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    : 'text-stone-500 hover:text-stone-800'
+                    ? 'bg-white text-[#1d1d1f] shadow-sm'
+                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
-                {t.beforeAfter.viewAfter}
+                {t.showAfter}
               </button>
             </div>
           </div>
 
-          {/* Realistic Google Search Card Simulation */}
-          <div
-            className={`p-4 bg-white rounded-xl border border-stone-200 shadow-2xs space-y-1.5 ${
-              isMobile ? 'max-w-md' : 'max-w-2xl'
-            }`}
-          >
-            {/* Breadcrumb / Favicon */}
-            <div className="flex items-center space-x-2 text-xs text-stone-700">
-              <div className="w-4 h-4 rounded-full bg-stone-100 flex items-center justify-center text-[10px] text-stone-500">
-                <Globe className="w-3 h-3 text-stone-600" />
+          {/* Реалистичная карточка Google */}
+          <div className={`p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple ${isMobile ? 'max-w-lg' : ''}`}>
+            <div className="flex items-center gap-2 text-xs text-[#6e6e73] mb-2">
+              <div className="w-4 h-4 rounded-full bg-[#f5f5f7] flex items-center justify-center">
+                <ExternalLink className="w-2.5 h-2.5" />
               </div>
-              <span className="text-xs font-medium text-stone-800 truncate">
-                {serpPreview.displayUrl || 'https://example.com'}
-              </span>
+              <span className="truncate">{serpPreview.displayUrl || 'https://example.com'}</span>
             </div>
-
-            {/* Clickable Blue Title */}
-            <h5 className="text-base sm:text-lg font-normal text-[#1a0dab] hover:underline cursor-pointer leading-snug line-clamp-2">
+            <h4 className="text-lg text-[#1a0dab] hover:underline cursor-pointer leading-snug mb-2 line-clamp-2">
               {serpState === 'after'
                 ? serpPreview.optimizedTitle || serpPreview.currentTitle
                 : serpPreview.currentTitle}
-            </h5>
-
-            {/* Meta Description Text */}
-            <p className="text-xs sm:text-sm text-[#4d5156] leading-relaxed line-clamp-3">
+            </h4>
+            <p className="text-sm text-[#4d5156] leading-relaxed line-clamp-3">
               {serpState === 'after'
                 ? serpPreview.optimizedDesc || serpPreview.currentDesc
                 : serpPreview.currentDesc}
@@ -250,6 +259,6 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { MarketingBonus, Language } from '../types/seo';
-import { TRANSLATIONS } from '../data/translations';
-import { Sparkles, CheckCircle2, UserCheck, FileText, ArrowRight, Globe } from 'lucide-react';
+import { CheckCircle2, UserCheck, ArrowRight } from 'lucide-react';
 
 interface MarketingCtaBonusProps {
   bonus: MarketingBonus;
@@ -26,7 +25,6 @@ export const MarketingCtaBonus: React.FC<MarketingCtaBonusProps> = ({
   language = 'ru',
   onOpenChecklistModal,
 }) => {
-  const t = TRANSLATIONS[language];
   const [consultationRequested, setConsultationRequested] = useState(false);
   const [userContact, setUserContact] = useState('');
 
@@ -40,129 +38,147 @@ export const MarketingCtaBonus: React.FC<MarketingCtaBonusProps> = ({
   const vkUrl = 'https://vk.ru/id1130637537';
   const portfolioUrl = 'https://vitwill.github.io/';
 
+  const t = {
+    badge:
+      language === 'en'
+        ? 'Expert bonus'
+        : language === 'de'
+        ? 'Experten-Bonus'
+        : 'Маркетинговый бонус',
+    sectionTitle:
+      language === 'en'
+        ? 'Reach TOP-3 and scale organic traffic'
+        : language === 'de'
+        ? 'TOP-3 erreichen und organischen Traffic skalieren'
+        : 'Хотите вывести сайт в ТОП-3 и масштабировать органический трафик?',
+    leadTitle:
+      language === 'en'
+        ? 'Need a personal promotion strategy for your website?'
+        : language === 'de'
+        ? 'Benötigen Sie eine individuelle SEO-Strategie?'
+        : 'Нужна персональная стратегия продвижения для вашего сайта?',
+    leadSubtitle:
+      language === 'en'
+        ? 'Leave your contact for a personalized project breakdown'
+        : language === 'de'
+        ? 'Hinterlassen Sie Ihren Kontakt für eine persönliche Projektanalyse'
+        : 'Оставьте контакт для персонального разбора проекта от автора аудита',
+    leadSent:
+      language === 'en'
+        ? 'Request received! We will contact you shortly.'
+        : language === 'de'
+        ? 'Anfrage erhalten! Wir melden uns in Kürze.'
+        : 'Заявка принята! Свяжемся с вами в течение рабочего дня.',
+    leadPlaceholder:
+      language === 'en' ? '@telegram or phone' : language === 'de' ? '@telegram oder Telefon' : '@telegram или телефон',
+    leadBtn:
+      language === 'en'
+        ? 'Request consultation'
+        : language === 'de'
+        ? 'Beratung anfordern'
+        : 'Получить консультацию',
+    telegramBtn: 'Telegram',
+    vkBtn: language === 'en' ? 'VK' : language === 'de' ? 'VK' : 'ВКонтакте',
+    portfolioBtn: language === 'en' ? 'Portfolio' : language === 'de' ? 'Portfolio' : 'Портфолио',
+    checklistBtn:
+      language === 'en'
+        ? 'Open checklist'
+        : language === 'de'
+        ? 'Checkliste öffnen'
+        : 'Открыть чеклист',
+  };
+
   return (
-    <div className="bg-white border border-[#ded7cb] rounded-2xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
-      <div className="relative z-10">
-        <div className="flex items-center space-x-2 text-emerald-800 font-bold text-xs uppercase tracking-wider mb-2">
-          <Sparkles className="w-4 h-4 text-emerald-600" />
-          <span>{t.marketing.badge}</span>
+    <section className="max-w-4xl mx-auto">
+      <div className="p-8 sm:p-10 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple">
+        {/* ---------- Заголовок секции ---------- */}
+        <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-3">
+          {t.badge}
         </div>
-
-        <h3 className="text-xl sm:text-2xl font-black text-stone-900 mb-2">
-          {bonus.title || t.marketing.leadTitle}
-        </h3>
-
-        <p className="text-sm text-stone-600 max-w-3xl leading-relaxed mb-6 font-medium">
-          {bonus.bonusText ||
-            'Экспресс-аудит выявил ключевые точки роста. Чтобы системно обойти конкурентов, скачайте наш расширенный чеклист на 50+ параметров и подпишитесь на Telegram-канал «Сайты для бизнеса | AI и задачи» (@sites_ai_tasks).'}
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-4">
+          {bonus.title || t.sectionTitle}
+        </h2>
+        <p className="text-sm sm:text-base text-[#6e6e73] leading-relaxed mb-8 max-w-2xl">
+          {bonus.bonusText}
         </p>
 
-        {/* Feature Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-          {t.marketing.features.map((feature, idx) => (
-            <div key={idx} className="flex items-center space-x-2.5 bg-[#faf8f5] border border-[#e5dfd5] p-3 rounded-xl">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span className="text-xs font-bold text-stone-800">{feature}</span>
-            </div>
-          ))}
+        {/* ---------- Кнопки соцсетей и чеклиста — в один ряд ---------- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          <a
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-apple cursor-pointer"
+          >
+            <TelegramIcon className="w-4 h-4" />
+            <span>{t.telegramBtn}</span>
+          </a>
+
+          <a
+            href={vkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium text-white bg-[#0077ff] hover:bg-[#0066dd] transition-apple cursor-pointer"
+          >
+            <VkIcon className="w-4 h-4" />
+            <span>{t.vkBtn}</span>
+          </a>
+
+          <a
+            href={portfolioUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium text-[#1d1d1f] bg-[#f5f5f7] hover:bg-[#e8e8ed] transition-apple cursor-pointer"
+          >
+            <span>{t.portfolioBtn}</span>
+          </a>
+
+          <button
+            onClick={onOpenChecklistModal}
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium text-[#1d1d1f] bg-[#f5f5f7] hover:bg-[#e8e8ed] transition-apple cursor-pointer"
+          >
+            <CheckCircle2 className="w-4 h-4 text-[#0071e3]" />
+            <span>{t.checklistBtn}</span>
+          </button>
         </div>
 
-        {/* Social Icons & Action Row */}
-        <div className="pt-4 border-t border-[#ece7de] space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            {/* Social Network Badges Group */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-              <span className="text-xs font-bold text-stone-500 mr-1 hidden sm:inline">
-                {t.marketing.socialConnect}
-              </span>
-
-              {/* Telegram */}
-              <a
-                href={telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Telegram: https://t.me/sites_ai_tasks (@sites_ai_tasks)"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#229ed9] hover:bg-[#1a8bc0] text-white transition shadow-xs hover:shadow-sm hover:scale-[1.02] transform cursor-pointer"
-              >
-                <TelegramIcon className="w-4 h-4" />
-                <span>{t.marketing.telegramBtn}</span>
-              </a>
-
-              {/* VK */}
-              <a
-                href={vkUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="ВКонтакте: https://vk.ru/id1130637537"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#0077ff] hover:bg-[#0066dd] text-white transition shadow-xs hover:shadow-sm hover:scale-[1.02] transform cursor-pointer"
-              >
-                <VkIcon className="w-4 h-4" />
-                <span>{t.marketing.vkBtn}</span>
-              </a>
-
-              {/* Portfolio */}
-              <a
-                href={portfolioUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Портфолио: https://vitwill.github.io/"
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#2d2822] hover:bg-[#1a1714] text-white transition shadow-xs hover:shadow-sm hover:scale-[1.02] transform cursor-pointer"
-              >
-                <Globe className="w-4 h-4 text-emerald-400" />
-                <span>{t.marketing.portfolioBtn}</span>
-              </a>
-            </div>
-
-            {/* Interactive Checklist CTA */}
-            <button
-              onClick={onOpenChecklistModal}
-              className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#faf8f5] hover:bg-[#f3efe6] border border-[#ded7cb] text-stone-800 transition cursor-pointer self-start sm:self-auto"
-            >
-              <FileText className="w-4 h-4 text-emerald-600" />
-              <span>{t.marketing.openChecklist}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Consultation Lead Form */}
-        <div className="mt-6 pt-5 border-t border-[#ece7de]">
+        {/* ---------- Форма обратной связи ---------- */}
+        <div className="pt-8 border-t border-[#e5e5e7]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold text-stone-900 block">
-                {t.marketing.leadTitle}
-              </span>
-              <p className="text-xs text-stone-500 font-medium">
-                {t.marketing.leadSubtitle}
-              </p>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-[#1d1d1f] mb-1">
+                {t.leadTitle}
+              </div>
+              <p className="text-xs text-[#6e6e73]">{t.leadSubtitle}</p>
             </div>
 
             {consultationRequested ? (
-              <div className="flex items-center space-x-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-4 py-2.5 rounded-xl">
-                <UserCheck className="w-4 h-4 text-emerald-600" />
-                <span>{t.marketing.leadSent}</span>
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#e8f8ee] text-[#1d1d1f] text-sm">
+                <UserCheck className="w-4 h-4 text-[#34c759]" />
+                <span>{t.leadSent}</span>
               </div>
             ) : (
-              <form onSubmit={handleConsultationSubmit} className="flex gap-2">
+              <form onSubmit={handleConsultationSubmit} className="flex gap-2 shrink-0">
                 <input
                   type="text"
-                  placeholder={t.marketing.leadPlaceholder}
+                  placeholder={t.leadPlaceholder}
                   value={userContact}
                   onChange={(e) => setUserContact(e.target.value)}
-                  className="px-3 py-2 bg-[#faf8f5] border border-[#ded7cb] rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-700 w-52"
+                  className="px-4 py-2.5 rounded-2xl text-sm bg-[#f5f5f7] border border-transparent focus:border-[#0071e3] focus:bg-white focus:outline-none transition-apple w-56"
                   required
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#2d2822] hover:bg-[#1a1714] text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-medium text-white bg-[#1d1d1f] hover:bg-[#000] transition-apple cursor-pointer whitespace-nowrap"
                 >
-                  <span>{t.marketing.leadBtn}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{t.leadBtn}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </form>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

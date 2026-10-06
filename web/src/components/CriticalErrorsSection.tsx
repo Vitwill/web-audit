@@ -1,7 +1,6 @@
 import React from 'react';
 import { CriticalError, Language } from '../types/seo';
-import { TRANSLATIONS } from '../data/translations';
-import { Flame, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface CriticalErrorsSectionProps {
   errors: CriticalError[];
@@ -12,114 +11,143 @@ export const CriticalErrorsSection: React.FC<CriticalErrorsSectionProps> = ({
   errors,
   language = 'ru',
 }) => {
-  const t = TRANSLATIONS[language];
-
+  // Пустой стейт — всё в порядке
   if (!errors || errors.length === 0) {
     return (
-      <div className="bg-white border border-emerald-200 rounded-2xl p-6 text-center shadow-xs">
-        <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 border border-emerald-100">
-          <CheckCircle2 className="w-6 h-6" />
+      <section className="max-w-4xl mx-auto">
+        <div className="flex flex-col items-center text-center py-12 px-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple">
+          <div className="w-14 h-14 rounded-full bg-[#e8f8ee] flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-7 h-7 text-[#34c759]" />
+          </div>
+          <h3 className="text-lg font-semibold text-[#1d1d1f] mb-2">
+            {language === 'en'
+              ? 'No critical issues found'
+              : language === 'de'
+              ? 'Keine kritischen Probleme gefunden'
+              : 'Критических ошибок не обнаружено'}
+          </h3>
+          <p className="text-sm text-[#6e6e73] max-w-md leading-relaxed">
+            {language === 'en'
+              ? 'Technical foundations are stable. Proceed to snippet optimization.'
+              : language === 'de'
+              ? 'Die technische Basis ist stabil. Fahren Sie mit der Snippet-Optimierung fort.'
+              : 'Технический фундамент в норме. Можно переходить к оптимизации сниппетов.'}
+          </p>
         </div>
-        <h3 className="text-base font-bold text-stone-900">{t.criticalErrors.title}</h3>
-        <p className="text-sm text-stone-600 mt-1 max-w-md mx-auto">
-          {t.criticalErrors.noErrors}
-        </p>
-      </div>
+      </section>
     );
   }
 
-  const getImpactBadge = (impact: string) => {
+  // Определяем "уровень" ошибки по тексту impact
+  const getImpactColor = (impact: string) => {
     const lower = (impact || '').toLowerCase();
-    if (lower.includes('критич') || lower.includes('crit') || lower.includes('срочн') || lower.includes('high')) {
-      return {
-        label: language === 'en' ? 'Critical Impact' : language === 'de' ? 'Kritischer Einfluss' : 'Критическое влияние',
-        classes: 'bg-rose-100 text-rose-800 border-rose-200',
-        dot: 'bg-rose-500 animate-pulse',
-      };
-    }
-    if (lower.includes('высок') || lower.includes('hoch') || lower.includes('medium')) {
-      return {
-        label: language === 'en' ? 'High Impact' : language === 'de' ? 'Hoher Einfluss' : 'Высокое влияние',
-        classes: 'bg-amber-100 text-amber-800 border-amber-200',
-        dot: 'bg-amber-500',
-      };
-    }
-    return {
-      label: language === 'en' ? 'Moderate Impact' : language === 'de' ? 'Mittlerer Einfluss' : 'Умеренное влияние',
-      classes: 'bg-sky-100 text-sky-800 border-sky-200',
-      dot: 'bg-sky-500',
-    };
+    if (lower.includes('критич') || lower.includes('crit')) return '#ff3b30';
+    if (lower.includes('высок') || lower.includes('hoch') || lower.includes('high'))
+      return '#ff9500';
+    return '#ffcc00';
   };
 
-  return (
-    <div className="bg-white border border-[#ded7cb] rounded-2xl p-6 sm:p-7 shadow-xs">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center">
-            <Flame className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="text-lg font-black text-stone-900 flex items-center gap-2">
-              {t.criticalErrors.title}
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                {errors.length}
-              </span>
-            </h3>
-            <p className="text-xs text-stone-500 font-medium">
-              {t.criticalErrors.subtitle}
-            </p>
-          </div>
-        </div>
-      </div>
+  const getImpactLabel = (impact: string): string => {
+    const lower = (impact || '').toLowerCase();
+    if (lower.includes('критич') || lower.includes('crit'))
+      return language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично';
+    if (lower.includes('высок') || lower.includes('hoch') || lower.includes('high'))
+      return language === 'en' ? 'High' : language === 'de' ? 'Hoch' : 'Высокое';
+    return language === 'en' ? 'Moderate' : language === 'de' ? 'Mittel' : 'Умеренное';
+  };
 
+  const sectionTitle =
+    language === 'en'
+      ? 'Critical issues'
+      : language === 'de'
+      ? 'Kritische Fehler'
+      : 'Критические ошибки';
+
+  const sectionSubtitle =
+    language === 'en'
+      ? 'Fix these first to restore indexing and rankings'
+      : language === 'de'
+      ? 'Diese zuerst beheben, um Indexierung und Rankings wiederherzustellen'
+      : 'Исправьте в первую очередь для восстановления индексации';
+
+  return (
+    <section className="max-w-4xl mx-auto">
+      {/* ---------- Заголовок секции ---------- */}
+      <div className="flex items-baseline gap-3 mb-8">
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+          {sectionTitle}
+        </h2>
+        <span className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-[#ffeceb] text-[#ff3b30] text-sm font-semibold">
+          {errors.length}
+        </span>
+      </div>
+      <p className="text-sm text-[#6e6e73] mb-8 -mt-6">{sectionSubtitle}</p>
+
+      {/* ---------- Список ошибок ---------- */}
       <div className="space-y-4">
         {errors.map((error, idx) => {
-          const badge = getImpactBadge(error.impact);
+          const impactColor = getImpactColor(error.impact);
+
           return (
             <div
               key={idx}
-              className="p-5 rounded-xl border border-rose-100 bg-[#fffdfa] hover:border-rose-300 transition shadow-2xs"
+              className="p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                <div className="flex items-center space-x-2.5">
-                  <span className="w-6 h-6 rounded-full bg-[#2d2822] text-white text-xs font-black flex items-center justify-center flex-shrink-0">
+              {/* Заголовок ошибки + уровень */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#ffeceb] text-[#ff3b30] text-xs font-bold shrink-0">
                     {idx + 1}
                   </span>
-                  <h4 className="text-base font-bold text-stone-900">{error.title}</h4>
+                  <h3 className="text-base font-semibold text-[#1d1d1f] leading-snug">
+                    {error.title}
+                  </h3>
                 </div>
-
-                <div className="flex items-center space-x-2">
-                  <span
-                    className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${badge.classes}`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
-                    <span>{badge.label}</span>
-                  </span>
-                </div>
+                <span
+                  className="self-start px-2.5 py-1 rounded-md text-[11px] font-semibold tracking-wide uppercase"
+                  style={{
+                    color: impactColor,
+                    backgroundColor: `${impactColor}15`,
+                  }}
+                >
+                  {getImpactLabel(error.impact)}
+                </span>
               </div>
 
-              {/* Description */}
-              <div className="mb-4 text-xs sm:text-sm text-stone-700 leading-relaxed bg-[#fbf9f5] p-3.5 rounded-lg border border-[#ece7de]">
-                <strong className="text-stone-900 block mb-1">
-                  {t.criticalErrors.impact}
-                </strong>
-                <p>{error.description}</p>
+              {/* Описание проблемы */}
+              <div className="mb-4 pl-10">
+                <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                  {language === 'en'
+                    ? 'The issue'
+                    : language === 'de'
+                    ? 'Das Problem'
+                    : 'В чём суть'}
+                </div>
+                <p className="text-sm text-[#1d1d1f] leading-relaxed">{error.description}</p>
               </div>
 
-              {/* Fix Action */}
-              <div className="p-3.5 rounded-lg bg-emerald-50/70 border border-emerald-200/80 flex items-start space-x-3">
-                <ArrowRight className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                <div className="text-xs sm:text-sm">
-                  <strong className="text-emerald-950 font-bold block mb-0.5">
-                    {t.criticalErrors.action}
-                  </strong>
-                  <span className="text-emerald-900 font-medium">{error.fixAction}</span>
+              {/* Что сделать */}
+              <div className="pl-10">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#f5f5f7]">
+                  <AlertCircle className="w-4 h-4 text-[#0071e3] shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-[#0071e3] mb-1.5">
+                      {language === 'en'
+                        ? 'What to do'
+                        : language === 'de'
+                        ? 'Was zu tun ist'
+                        : 'Что сделать'}
+                    </div>
+                    <p className="text-sm text-[#1d1d1f] leading-relaxed">
+                      {error.fixAction}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

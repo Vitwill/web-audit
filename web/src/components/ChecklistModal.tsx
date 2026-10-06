@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Language } from '../types/seo';
-import { TRANSLATIONS } from '../data/translations';
-import { X, CheckSquare, Square, Download, Send, Sparkles } from 'lucide-react';
+import { X, CheckSquare, Square, Download } from 'lucide-react';
 
 interface ChecklistModalProps {
   isOpen: boolean;
@@ -170,7 +169,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     },
   },
 
-  // 2. Visibility & Rankings
+  // 2. Visibility
   {
     id: 'v1',
     category: 'visibility',
@@ -292,7 +291,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     },
   },
 
-  // 3. User Intent & Behavior
+  // 3. Intent
   {
     id: 'i1',
     category: 'intent',
@@ -384,7 +383,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
     },
   },
 
-  // 4. Content Quality & Links
+  // 4. Content
   {
     id: 'c1',
     category: 'content',
@@ -477,10 +476,15 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
   },
 ];
 
-export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose, language = 'ru' }) => {
-  const t = TRANSLATIONS[language];
+export const ChecklistModal: React.FC<ChecklistModalProps> = ({
+  isOpen,
+  onClose,
+  language = 'ru',
+}) => {
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
-  const [activeFilter, setActiveFilter] = useState<'all' | 'technical' | 'visibility' | 'intent' | 'content'>('all');
+  const [activeFilter, setActiveFilter] = useState<
+    'all' | 'technical' | 'visibility' | 'intent' | 'content'
+  >('all');
 
   if (!isOpen) return null;
 
@@ -501,22 +505,20 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
   const progressPercent = Math.round((checkedIds.size / CHECKLIST_ITEMS.length) * 100);
 
   const handleDownloadChecklist = () => {
-    let md = `# ${t.modals.checklistTitle}\n\n`;
-    md += `${language === 'en' ? 'Date' : language === 'de' ? 'Datum' : 'Дата'}: ${new Date().toLocaleDateString()}\n${
+    let md = `# SEO Checklist\n\n`;
+    md += `${
+      language === 'en' ? 'Date' : language === 'de' ? 'Datum' : 'Дата'
+    }: ${new Date().toLocaleDateString()}\n`;
+    md += `${
       language === 'en' ? 'Progress' : language === 'de' ? 'Fortschritt' : 'Прогресс'
     }: ${checkedIds.size}/${CHECKLIST_ITEMS.length} (${progressPercent}%)\n\n`;
 
     CHECKLIST_ITEMS.forEach((item) => {
       const isChecked = checkedIds.has(item.id) ? '[x]' : '[ ]';
-      const crit = item.critical
-        ? ` [${language === 'en' ? 'CRITICAL' : language === 'de' ? 'KRITISCH' : 'КРИТИЧНО'}]`
-        : '';
       const title = item.title[language] || item.title.ru;
       const desc = item.desc[language] || item.desc.ru;
-      md += `- ${isChecked} **${title}**${crit}: ${desc}\n`;
+      md += `- ${isChecked} **${title}**: ${desc}\n`;
     });
-
-    md += `\n---\n${language === 'en' ? 'Contacts & Links' : language === 'de' ? 'Kontakte & Links' : 'Контакты и ресурсы'}:\n- Telegram: https://t.me/sites_ai_tasks (@sites_ai_tasks)\n- ВКонтакте: https://vk.ru/id1130637537\n- ${language === 'en' ? 'Portfolio' : language === 'de' ? 'Portfolio' : 'Портфолио'}: https://vitwill.github.io/\n`;
 
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const link = document.createElement('a');
@@ -526,149 +528,154 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
     URL.revokeObjectURL(link.href);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-fade-in">
-      <div className="bg-white border border-[#ded7cb] rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ece7de] bg-[#fbf9f5]">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#2d2822] text-emerald-400 flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-base font-black text-stone-900">
-                {t.modals.checklistTitle}
-              </h3>
-              <p className="text-xs text-stone-500 font-medium">
-                {t.modals.checklistSubtitle}
-              </p>
-            </div>
-          </div>
+  const filterLabels = {
+    all: language === 'en' ? 'All' : language === 'de' ? 'Alle' : 'Все',
+    technical: language === 'en' ? 'Technical' : language === 'de' ? 'Technik' : 'Техника',
+    visibility: language === 'en' ? 'Visibility' : language === 'de' ? 'Sichtbarkeit' : 'Видимость',
+    intent: language === 'en' ? 'Intent' : language === 'de' ? 'Intention' : 'Интенты',
+    content: language === 'en' ? 'Content' : language === 'de' ? 'Inhalt' : 'Контент',
+  };
 
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ---------- Шапка ---------- */}
+        <div className="flex items-start justify-between px-8 py-6 border-b border-[#e5e5e7]">
+          <div>
+            <h3 className="text-xl font-semibold tracking-tight text-[#1d1d1f] mb-1">
+              {language === 'en'
+                ? 'Comprehensive SEO audit checklist'
+                : language === 'de'
+                ? 'Umfassende SEO-Audit-Checkliste'
+                : 'Чеклист комплексного SEO-аудита'}
+            </h3>
+            <p className="text-sm text-[#6e6e73]">
+              {language === 'en'
+                ? 'Full expert guide for technical, content and CWV checks'
+                : language === 'de'
+                ? 'Vollständiger Leitfaden für Technik, Inhalt und CWV'
+                : 'Полный гид эксперта по проверке технической части, контента и Core Web Vitals'}
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition cursor-pointer"
+            className="p-2 rounded-full text-[#86868b] hover:text-[#1d1d1f] hover:bg-[#f5f5f7] transition-apple cursor-pointer"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Progress & Filters */}
-        <div className="px-6 py-3.5 bg-white border-b border-[#ece7de] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Progress bar */}
-          <div className="flex items-center space-x-3 flex-1">
-            <div className="flex-1 bg-[#ece7de] h-2 rounded-full overflow-hidden max-w-xs">
+        {/* ---------- Прогресс + фильтры ---------- */}
+        <div className="px-8 py-4 border-b border-[#e5e5e7] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 max-w-md">
+            <div className="flex-1 h-1.5 bg-[#f5f5f7] rounded-full overflow-hidden">
               <div
-                className="bg-emerald-500 h-full rounded-full transition-all duration-300"
+                className="h-full bg-[#0071e3] rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-xs font-bold text-stone-700">
-              {checkedIds.size} / {CHECKLIST_ITEMS.length} ({progressPercent}%)
+            <span className="text-xs font-medium text-[#6e6e73] tabular-nums">
+              {checkedIds.size} / {CHECKLIST_ITEMS.length}
             </span>
           </div>
 
-          {/* Filters */}
-          <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {[
-              { id: 'all', label: language === 'en' ? 'All' : language === 'de' ? 'Alle' : 'Все' },
-              { id: 'technical', label: language === 'en' ? 'Technical' : language === 'de' ? 'Technik' : 'Техника' },
-              { id: 'visibility', label: language === 'en' ? 'Visibility' : language === 'de' ? 'Sichtbarkeit' : 'Видимость' },
-              { id: 'intent', label: language === 'en' ? 'Intent' : language === 'de' ? 'Intention' : 'Интенты' },
-              { id: 'content', label: language === 'en' ? 'Content' : language === 'de' ? 'Inhalt' : 'Контент' },
-            ].map((f) => (
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            {(['all', 'technical', 'visibility', 'intent', 'content'] as const).map((f) => (
               <button
-                key={f.id}
-                onClick={() => setActiveFilter(f.id as any)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  activeFilter === f.id
-                    ? 'bg-[#2d2822] text-white shadow-2xs'
-                    : 'bg-white border border-[#ded7cb] text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-apple cursor-pointer whitespace-nowrap ${
+                  activeFilter === f
+                    ? 'bg-[#1d1d1f] text-white'
+                    : 'bg-[#f5f5f7] text-[#1d1d1f]/70 hover:text-[#1d1d1f]'
                 }`}
               >
-                {f.label}
+                {filterLabels[f]}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Items List */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-2.5 bg-[#faf8f5]">
+        {/* ---------- Список пунктов ---------- */}
+        <div className="px-8 py-6 overflow-y-auto flex-1 space-y-2 bg-[#fafafa]">
           {filteredItems.map((item) => {
             const isChecked = checkedIds.has(item.id);
             const title = item.title[language] || item.title.ru;
             const desc = item.desc[language] || item.desc.ru;
 
             return (
-              <div
+              <button
                 key={item.id}
                 onClick={() => toggleItem(item.id)}
-                className={`p-3.5 rounded-xl border transition cursor-pointer flex items-start space-x-3 ${
+                className={`w-full text-left p-4 rounded-2xl border transition-apple cursor-pointer flex items-start gap-3 ${
                   isChecked
-                    ? 'bg-emerald-50/50 border-emerald-300'
-                    : 'bg-white border-[#ded7cb] hover:border-stone-400'
+                    ? 'bg-white border-[#0071e3]/30'
+                    : 'bg-white border-[#e5e5e7] hover:border-[#d2d2d7]'
                 }`}
               >
-                <div className="mt-0.5 flex-shrink-0">
+                <div className="mt-0.5 shrink-0">
                   {isChecked ? (
-                    <CheckSquare className="w-4 h-4 text-emerald-600" />
+                    <CheckSquare className="w-4 h-4 text-[#0071e3]" />
                   ) : (
-                    <Square className="w-4 h-4 text-stone-400" />
+                    <Square className="w-4 h-4 text-[#c7c7cc]" />
                   )}
                 </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span
-                      className={`text-xs font-bold ${
-                        isChecked ? 'line-through text-stone-500' : 'text-stone-900'
+                      className={`text-sm font-medium ${
+                        isChecked ? 'text-[#86868b] line-through' : 'text-[#1d1d1f]'
                       }`}
                     >
                       {title}
                     </span>
                     {item.critical && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-200 uppercase">
-                        {language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично'}
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#ffeceb] text-[#ff3b30]">
+                        {language === 'en'
+                          ? 'Critical'
+                          : language === 'de'
+                          ? 'Kritisch'
+                          : 'Критично'}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{desc}</p>
+                  <p className="text-xs text-[#6e6e73] leading-relaxed">{desc}</p>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-[#ece7de] bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-stone-500 font-medium">
-            Google Search Central & Best SEO Practices 2026
-          </div>
+        {/* ---------- Футер ---------- */}
+        <div className="px-8 py-4 border-t border-[#e5e5e7] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs text-[#86868b]">Google Search Central 2026</div>
 
-          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleDownloadChecklist}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#faf8f5] hover:bg-[#f3efe6] border border-[#ded7cb] text-stone-800 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium text-[#1d1d1f] bg-[#f5f5f7] hover:bg-[#e8e8ed] transition-apple cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>{t.modals.markdownDownload}</span>
+              {language === 'en'
+                ? 'Download .md'
+                : language === 'de'
+                ? '.md herunterladen'
+                : 'Скачать .md'}
             </button>
-
-            <a
-              href="https://t.me/sites_ai_tasks"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#229ed9] hover:bg-[#1f8fc4] transition shadow-xs"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>@sites_ai_tasks</span>
-            </a>
 
             <button
               onClick={onClose}
-              className="px-4 py-1.5 rounded-lg font-bold bg-[#2d2822] hover:bg-[#1a1714] text-white text-xs transition cursor-pointer"
+              className="px-4 py-2 rounded-full text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-apple cursor-pointer"
             >
-              {t.modals.close}
+              {language === 'en' ? 'Close' : language === 'de' ? 'Schließen' : 'Закрыть'}
             </button>
           </div>
         </div>
