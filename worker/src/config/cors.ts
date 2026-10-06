@@ -12,11 +12,9 @@
 // Правила:
 //   - Разрешаем только origin из env.ALLOWED_ORIGIN (production).
 //   - Плюс всегда разрешаем http://localhost:5173 (dev-сервер Vite).
-//   - Разрешаем только методы POST и OPTIONS.
-//   - Разрешаем только заголовок Content-Type.
-//
-// ВАЖНО: если понадобится ещё один фронт (например, кастомный домен),
-// добавьте его в ALLOWED_EXTRA_ORIGINS.
+//   - Разрешаем методы POST и OPTIONS.
+//   - Разрешаем заголовки Content-Type и X-User-Id.
+//   - Открываем для чтения X-Quota-* (остаток квоты для фронта).
 // -----------------------------------------------------------------------------
 
 import { Env } from '../types';
@@ -44,13 +42,15 @@ export function corsHeaders(
 ): Record<string, string> {
   const allowedOrigins = [env.ALLOWED_ORIGIN, ...ALLOWED_EXTRA_ORIGINS];
 
-  // Если origin не передан или не разрешён — не возвращаем
-  // Access-Control-Allow-Origin, и браузер сам заблокирует запрос.
   const isAllowed = origin !== null && allowedOrigins.includes(origin);
 
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    // X-User-Id — для учёта квоты
+    'Access-Control-Allow-Headers': 'Content-Type, X-User-Id',
+    // X-Quota-* — для чтения остатка на фронте
+    'Access-Control-Expose-Headers':
+      'X-Quota-Remaining, X-Quota-Limit, X-Quota-Used, X-Quota-Subscription',
     'Access-Control-Max-Age': '86400', // 24 часа — браузер кэширует preflight
     Vary: 'Origin', // важно для кэширования CORS на CDN
   };
