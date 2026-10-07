@@ -1,0 +1,41 @@
+# -----------------------------------------------------------------------------
+# Конфигурация Cloudflare Worker для Telegram-бота @vitwill_audit_bot
+# -----------------------------------------------------------------------------
+#
+# Бот проверяет подписку на канал @sites_ai_tasks и активирует безлимит
+# в сервисе Web-Audit (пишет в KV: user:<uuid> → subscription: 'active').
+#
+# Использует ТОТ ЖЕ KV namespace RATE_LIMIT, что и основной Worker,
+# чтобы читать и писать одни и те же записи user:<uuid>.
+#
+# Секреты (задаются через `wrangler secret put`):
+#   TELEGRAM_BOT_TOKEN — токен бота от @BotFather
+#   TELEGRAM_WEBHOOK_SECRET — секрет для проверки webhook (опционально)
+#
+# Переменные (задаются в [vars]):
+#   CHANNEL_ID — username канала для проверки подписки
+# -----------------------------------------------------------------------------
+
+name = "web-audit-bot"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+# Node.js-совместимость (на будущее, если понадобятся Buffer и т.п.)
+compatibility_flags = ["nodejs_compat"]
+
+# Публичный URL бота: https://web-audit-bot.<ваш-subdomain>.workers.dev
+workers_dev = true
+
+# Переменные окружения (не секреты)
+[vars]
+CHANNEL_ID = "@sites_ai_tasks"
+ENVIRONMENT = "production"
+
+# KV namespace — тот же, что и у основного Worker'а.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "1bdf08fe12fa4e3fb0ed75607c6a004e"
+
+# Логи в дашборде Cloudflare
+[observability]
+enabled = true

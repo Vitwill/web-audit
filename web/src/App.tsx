@@ -26,7 +26,6 @@ function getOrCreateUserId(): string {
     if (id && /^[a-zA-Z0-9-]{16,64}$/.test(id)) {
       return id;
     }
-    // Генерируем UUID v4
     id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -35,7 +34,6 @@ function getOrCreateUserId(): string {
     window.localStorage.setItem(USER_ID_KEY, id);
     return id;
   } catch {
-    // localStorage может быть недоступен (приватный режим) — генерируем на сессию
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -57,12 +55,12 @@ export default function App() {
   const lastParamsRef = useRef<any>(null);
   const [isChecklistModalOpen, setIsChecklistModalOpen] = useState(false);
 
-  // Квота: сколько осталось бесплатных аудитов + флаг исчерпания
+  // Квота
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
   const [quotaExhausted, setQuotaExhausted] = useState(false);
   const [quotaUnlimited, setQuotaUnlimited] = useState(false);
 
-  // UUID пользователя (создаётся при первом рендере)
+  // UUID пользователя
   const userIdRef = useRef<string>('');
   useEffect(() => {
     userIdRef.current = getOrCreateUserId();
@@ -107,7 +105,6 @@ export default function App() {
     }, 2500);
 
     try {
-      // Заголовки: Content-Type + X-User-Id (для учёта квоты)
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
@@ -127,14 +124,11 @@ export default function App() {
 
       clearInterval(stepInterval);
 
-      // Читаем квоту из заголовков ответа
+      // Читаем заголовки квоты
       const remainingHeader = response.headers.get('X-Quota-Remaining');
       const subscriptionHeader = response.headers.get('X-Quota-Subscription');
 
-      if (subscriptionHeader === 'active') {
-        setQuotaUnlimited(true);
-        setQuotaRemaining(null);
-      } else if (remainingHeader === 'unlimited') {
+      if (subscriptionHeader === 'active' || remainingHeader === 'unlimited') {
         setQuotaUnlimited(true);
         setQuotaRemaining(null);
       } else if (remainingHeader !== null) {
@@ -144,9 +138,8 @@ export default function App() {
         }
       }
 
-      // Обрабатываем особые статусы
+      // 402 — квота исчерпана
       if (response.status === 402) {
-        // Квота исчерпана
         const errorData = await response.json().catch(() => ({}));
         setQuotaExhausted(true);
         setQuotaRemaining(0);
@@ -224,6 +217,7 @@ export default function App() {
           quotaRemaining={quotaRemaining}
           quotaExhausted={quotaExhausted}
           quotaUnlimited={quotaUnlimited}
+          userId={userIdRef.current}
         />
 
         {errorMessage && !quotaExhausted && (

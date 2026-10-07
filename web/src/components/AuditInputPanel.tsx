@@ -10,10 +10,10 @@ interface AuditInputPanelProps {
   onDeviceChange: (device: DeviceType) => void;
   language: Language;
   onLanguageChange: (lang: Language) => void;
-  // Квота
   quotaRemaining?: number | null;
   quotaExhausted?: boolean;
   quotaUnlimited?: boolean;
+  userId?: string;
 }
 
 export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
@@ -26,6 +26,7 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
   quotaRemaining = null,
   quotaExhausted = false,
   quotaUnlimited = false,
+  userId = '',
 }) => {
   const [urlInput, setUrlInput] = useState('');
 
@@ -40,7 +41,12 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
     });
   };
 
-  // Тексты интерфейса
+  // Ссылка на бота с UUID (если UUID есть)
+  const telegramBotUrl = userId
+    ? `https://t.me/vitwill_audit_bot?start=${userId}`
+    : 'https://t.me/vitwill_audit_bot';
+
+  // Тексты
   const t = {
     heading:
       language === 'en'
@@ -76,7 +82,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
       language === 'en' ? 'Mobile' : language === 'de' ? 'Mobil' : 'Смартфон',
     desktop:
       language === 'en' ? 'Desktop' : language === 'de' ? 'Desktop' : 'Компьютер',
-    // Квота
     quotaRemaining:
       language === 'en'
         ? `Free audits remaining: ${quotaRemaining}`
@@ -118,7 +123,7 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
   return (
     <section className="pt-8 sm:pt-16 pb-8">
       <div className="max-w-3xl mx-auto">
-        {/* ---------- Логотип-заголовок ---------- */}
+        {/* Логотип-заголовок */}
         <div className="flex justify-center mb-8 sm:mb-10">
           <img
             src={`${import.meta.env.BASE_URL}vitwill-logo.png`}
@@ -127,38 +132,33 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
           />
         </div>
 
-        {/* ---------- Крупный заголовок ---------- */}
+        {/* Крупный заголовок */}
         <h1 className="text-center text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#1d1d1f] mb-4 sm:mb-6">
           {t.heading}
         </h1>
 
-        {/* ---------- Подзаголовок ---------- */}
         <p className="text-center text-base sm:text-lg text-[#6e6e73] max-w-xl mx-auto mb-10 sm:mb-14 leading-relaxed">
           {t.subtitle}
         </p>
 
-        {/* ---------- Если квота исчерпана — показываем баннер ---------- */}
+        {/* Баннер при исчерпании квоты */}
         {quotaExhausted ? (
           <div className="max-w-2xl mx-auto">
             <div className="p-8 sm:p-10 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple text-center">
-              {/* Иконка */}
               <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#fff3e0] flex items-center justify-center">
                 <Lock className="w-7 h-7 text-[#ff9500]" />
               </div>
 
-              {/* Заголовок */}
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#1d1d1f] mb-3">
                 {t.exhaustedTitle}
               </h2>
 
-              {/* Текст */}
               <p className="text-sm sm:text-base text-[#6e6e73] leading-relaxed mb-8 max-w-md mx-auto">
                 {t.exhaustedText}
               </p>
 
-              {/* Кнопка подписки */}
               <a
-                href="https://t.me/pervyy_zakaz_bot"
+                href={telegramBotUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl text-base font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-apple cursor-pointer mb-3"
@@ -166,7 +166,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                 <span>{t.subscribeBtn}</span>
               </a>
 
-              {/* Кнопка обновления статуса */}
               <div>
                 <button
                   type="button"
@@ -180,7 +179,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
           </div>
         ) : (
           <>
-            {/* ---------- Форма ---------- */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
@@ -212,7 +210,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                 </button>
               </div>
 
-              {/* ---------- Переключатель устройства ---------- */}
               <div className="flex justify-center pt-2">
                 <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full">
                   <button
@@ -240,7 +237,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                 </div>
               </div>
 
-              {/* ---------- Строка прогресса ---------- */}
               {isLoading && loadingStepText && (
                 <div className="pt-4 flex items-center justify-center gap-3 text-sm text-[#6e6e73]">
                   <Loader2 className="w-4 h-4 animate-spin text-[#0071e3]" />
@@ -249,7 +245,6 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
               )}
             </form>
 
-            {/* ---------- Метка квоты под формой ---------- */}
             {!isLoading && (
               <div className="pt-6 text-center">
                 {quotaUnlimited ? (
