@@ -1,6 +1,7 @@
 # Web-Audit
 
-<img width="1200" height="628" alt="banner jpg" src="https://github.com/user-attachments/assets/029f029e-ad46-45c4-9889-ee06685fd90d" />
+<img width="1200" height="628" alt="banner1" src="https://github.com/user-attachments/assets/9b8da485-1425-452e-98f8-6a0879bb21ad" />
+
 
 
 > Экспресс-аудит веб-страниц с AI-анализом: SEO, Core Web Vitals, структура и контент — за 30 секунд.
