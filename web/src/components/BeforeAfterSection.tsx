@@ -39,20 +39,9 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
 
   const isMobile = device === 'mobile';
 
-  // Локализация
   const t = {
-    sectionTitle:
-      language === 'en'
-        ? 'Before / After'
-        : language === 'de'
-        ? 'Vorher / Nachher'
-        : 'Рекомендации «Было / Стало»',
-    sectionSubtitle:
-      language === 'en'
-        ? 'Optimized tag variants to lift your click-through rate'
-        : language === 'de'
-        ? 'Optimierte Tag-Varianten für höhere Klickraten'
-        : 'Оптимизированные варианты тегов для роста CTR',
+    sectionTitle: language === 'en' ? 'Before / After' : language === 'de' ? 'Vorher / Nachher' : 'Рекомендации «Было / Стало»',
+    sectionSubtitle: language === 'en' ? 'Optimized tag variants to lift your click-through rate' : language === 'de' ? 'Optimierte Tag-Varianten für höhere Klickraten' : 'Оптимизированные варианты тегов для роста CTR',
     copy: language === 'en' ? 'Copy' : language === 'de' ? 'Kopieren' : 'Скопировать',
     copied: language === 'en' ? 'Copied' : language === 'de' ? 'Kopiert' : 'Скопировано',
     before: language === 'en' ? 'Before (current)' : language === 'de' ? 'Vorher (aktuell)' : 'Было (текущий вариант)',
@@ -71,24 +60,21 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
   return (
     <section className="max-w-4xl mx-auto">
       {/* ---------- Заголовок секции ---------- */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-[rgba(14,14,14,0.14)]">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-2">
+          <h2 className="font-display text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-[#0E0E0E] mb-2">
             {t.sectionTitle}
           </h2>
-          <p className="text-sm text-[#6e6e73]">{t.sectionSubtitle}</p>
+          <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)]">{t.sectionSubtitle}</p>
         </div>
 
-        {/* Переключатель Mobile/Desktop */}
         {onDeviceChange && (
-          <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full shrink-0">
+          <div className="inline-flex bg-[#EFEBE3] border border-[rgba(14,14,14,0.22)] rounded-sm p-1 shrink-0">
             <button
               type="button"
               onClick={() => onDeviceChange('mobile')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                isMobile
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+              className={`flex items-center gap-1.5 px-4 py-1.5 font-mono text-[10px] tracking-[0.1em] uppercase rounded-sm transition-colors cursor-pointer ${
+                isMobile ? 'bg-[#0E0E0E] text-[#F5F2EC]' : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
               }`}
             >
               <Smartphone className="w-3 h-3" />
@@ -97,10 +83,8 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
             <button
               type="button"
               onClick={() => onDeviceChange('desktop')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                !isMobile
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+              className={`flex items-center gap-1.5 px-4 py-1.5 font-mono text-[10px] tracking-[0.1em] uppercase rounded-sm transition-colors cursor-pointer ${
+                !isMobile ? 'bg-[#0E0E0E] text-[#F5F2EC]' : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
               }`}
             >
               <Laptop className="w-3 h-3" />
@@ -111,7 +95,7 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
       </div>
 
       {/* ---------- Карточки Before/After ---------- */}
-      <div className="space-y-4 mb-12">
+      <div className="space-y-6 mb-12">
         {items.map((item, idx) => {
           const recLength = getRecommendedLength(item.element);
           const isCopied = copiedIndex === idx;
@@ -119,16 +103,15 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
           return (
             <div
               key={idx}
-              className="p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple"
+              className="p-6 bg-[#EFEBE3] rounded-sm border border-[rgba(14,14,14,0.14)]"
             >
-              {/* Заголовок карточки: element + copy */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-[rgba(14,14,14,0.14)]">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-sm font-semibold text-[#1d1d1f]">
+                  <span className="font-display text-[17px] font-medium text-[#0E0E0E]">
                     {item.element}
                   </span>
                   {recLength && (
-                    <span className="text-xs text-[#86868b]">
+                    <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)] border border-[rgba(14,14,14,0.14)] px-2 py-0.5 rounded-sm">
                       {t.optimal} {recLength}
                     </span>
                   )}
@@ -136,66 +119,58 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
 
                 <button
                   onClick={() => copyToClipboard(item.after, idx)}
-                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#0071e3] hover:text-[#0077ed] transition-apple cursor-pointer"
+                  className="self-start sm:self-auto inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.1em] uppercase text-[#C1440E] hover:text-[#0E0E0E] transition-colors cursor-pointer"
                 >
                   {isCopied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      {t.copied}
-                    </>
+                    <><Check className="w-3.5 h-3.5" />{t.copied}</>
                   ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      {t.copy}
-                    </>
+                    <><Copy className="w-3.5 h-3.5" />{t.copy}</>
                   )}
                 </button>
               </div>
 
-              {/* Было / Стало — две колонки */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Было */}
-                <div className="p-5 rounded-2xl bg-[#f5f5f7]">
+                <div className="p-5 rounded-sm bg-[#F5F2EC] border border-dashed border-[rgba(14,14,14,0.22)]">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium uppercase tracking-wide text-[#86868b]">
+                    <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)]">
                       {t.before}
                     </span>
                     {item.beforeCharCount !== undefined && (
-                      <span className="text-xs font-mono text-[#86868b]">
+                      <span className="font-mono text-[10px] text-[rgba(14,14,14,0.45)]">
                         {item.beforeCharCount} {t.chars}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-[#1d1d1f] leading-relaxed line-through decoration-[#d2d2d7] decoration-1">
+                  <p className="text-[14px] text-[#0E0E0E] leading-relaxed line-through decoration-[rgba(14,14,14,0.22)] decoration-1">
                     {item.before || t.notSpecified}
                   </p>
                 </div>
 
                 {/* Стало */}
-                <div className="p-5 rounded-2xl bg-white border border-[#0071e3]/20">
+                <div className="p-5 rounded-sm bg-[#F5F2EC] border border-[#C1440E]">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium uppercase tracking-wide text-[#0071e3]">
+                    <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-[#C1440E]">
                       {t.after}
                     </span>
                     {item.afterCharCount !== undefined && (
-                      <span className="text-xs font-mono text-[#0071e3]">
+                      <span className="font-mono text-[10px] text-[#C1440E]">
                         {item.afterCharCount} {t.chars}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-[#1d1d1f] font-medium leading-relaxed">
+                  <p className="text-[14px] text-[#0E0E0E] font-medium leading-relaxed">
                     {item.after}
                   </p>
                 </div>
               </div>
 
-              {/* Почему это сработает */}
               {item.reason && (
-                <div className="mt-5 pt-4 border-t border-[#e5e5e7]">
-                  <div className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-2">
+                <div className="mt-5 pt-4 border-t border-[rgba(14,14,14,0.14)]">
+                  <div className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)] mb-2">
                     {t.reasonLabel}
                   </div>
-                  <p className="text-sm text-[#1d1d1f] leading-relaxed">{item.reason}</p>
+                  <p className="text-[13px] text-[rgba(14,14,14,0.68)] leading-relaxed">{item.reason}</p>
                 </div>
               )}
             </div>
@@ -207,19 +182,16 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
       {serpPreview && (
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-            <h3 className="text-xs font-medium uppercase tracking-widest text-[#86868b]">
+            <h3 className="font-mono text-[11px] tracking-[0.16em] uppercase text-[rgba(14,14,14,0.45)]">
               {t.serpTitle}
             </h3>
 
-            {/* Переключатель Было/Стало */}
-            <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full">
+            <div className="inline-flex bg-[#EFEBE3] border border-[rgba(14,14,14,0.22)] rounded-sm p-1">
               <button
                 type="button"
                 onClick={() => setSerpState('before')}
-                className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                  serpState === 'before'
-                    ? 'bg-white text-[#1d1d1f] shadow-sm'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                className={`px-4 py-1 font-mono text-[10px] tracking-[0.1em] uppercase rounded-sm transition-colors cursor-pointer ${
+                  serpState === 'before' ? 'bg-[#0E0E0E] text-[#F5F2EC]' : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
                 }`}
               >
                 {t.showBefore}
@@ -227,10 +199,8 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
               <button
                 type="button"
                 onClick={() => setSerpState('after')}
-                className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                  serpState === 'after'
-                    ? 'bg-white text-[#1d1d1f] shadow-sm'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                className={`px-4 py-1 font-mono text-[10px] tracking-[0.1em] uppercase rounded-sm transition-colors cursor-pointer ${
+                  serpState === 'after' ? 'bg-[#0E0E0E] text-[#F5F2EC]' : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
                 }`}
               >
                 {t.showAfter}
@@ -238,23 +208,19 @@ export const BeforeAfterSection: React.FC<BeforeAfterSectionProps> = ({
             </div>
           </div>
 
-          {/* Реалистичная карточка Google */}
-          <div className={`p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple ${isMobile ? 'max-w-lg' : ''}`}>
-            <div className="flex items-center gap-2 text-xs text-[#6e6e73] mb-2">
-              <div className="w-4 h-4 rounded-full bg-[#f5f5f7] flex items-center justify-center">
+          {/* Карточка Google (сохраняем цвета Google для реалистичности, но добавляем наши границы) */}
+          <div className={`p-6 bg-white rounded-sm border border-[rgba(14,14,14,0.22)] ${isMobile ? 'max-w-lg' : ''}`}>
+            <div className="flex items-center gap-2 text-xs text-[#202124] mb-2 font-sans">
+              <div className="w-4 h-4 rounded-full bg-[#f1f3f4] flex items-center justify-center">
                 <ExternalLink className="w-2.5 h-2.5" />
               </div>
               <span className="truncate">{serpPreview.displayUrl || 'https://example.com'}</span>
             </div>
-            <h4 className="text-lg text-[#1a0dab] hover:underline cursor-pointer leading-snug mb-2 line-clamp-2">
-              {serpState === 'after'
-                ? serpPreview.optimizedTitle || serpPreview.currentTitle
-                : serpPreview.currentTitle}
+            <h4 className="text-xl text-[#1a0dab] hover:underline cursor-pointer leading-snug mb-1 line-clamp-2 font-sans font-normal">
+              {serpState === 'after' ? serpPreview.optimizedTitle || serpPreview.currentTitle : serpPreview.currentTitle}
             </h4>
-            <p className="text-sm text-[#4d5156] leading-relaxed line-clamp-3">
-              {serpState === 'after'
-                ? serpPreview.optimizedDesc || serpPreview.currentDesc
-                : serpPreview.currentDesc}
+            <p className="text-[14px] text-[#4d5156] leading-relaxed line-clamp-3 font-sans">
+              {serpState === 'after' ? serpPreview.optimizedDesc || serpPreview.currentDesc : serpPreview.currentDesc}
             </p>
           </div>
         </div>
