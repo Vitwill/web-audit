@@ -25,10 +25,11 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 glass border-b border-[#e5e5e7]">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 glass">
+      <div className="max-w-[1440px] mx-auto px-5 md:px-10 h-[73px] flex items-center justify-between gap-4">
+        
         {/* ---------- Слева: логотип + название ---------- */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-4 min-w-0">
           <a
             href="https://vitwill.github.io/"
             target="_blank"
@@ -39,26 +40,26 @@ export const Header: React.FC<HeaderProps> = ({
             <img
               src={`${import.meta.env.BASE_URL}vitwill-logo.png`}
               alt="VITWILL"
-              className="h-6 w-auto"
+              className="h-7 w-auto"
             />
           </a>
-          <span className="hidden md:block text-sm font-medium text-[#1d1d1f]/80 truncate">
-            Сайты для бизнеса | AI и задачи
+          <span className="hidden md:block font-display text-[17px] font-semibold tracking-[-0.02em] text-[#0E0E0E] truncate">
+            Сайты для бизнеса <em className="font-serif italic text-[#C1440E]">| AI и задачи</em>
           </span>
         </div>
 
         {/* ---------- Справа: языки, чеклист, Telegram ---------- */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <nav className="flex items-center gap-1" aria-label="Language switcher">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <nav className="flex items-center gap-1.5" aria-label="Language switcher">
             {languages.map(({ code, label }) => (
               <button
                 key={code}
                 type="button"
                 onClick={() => onLanguageChange(code)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer ${
+                className={`px-2.5 py-1 font-mono text-[11px] tracking-[0.1em] border rounded-sm transition-colors cursor-pointer ${
                   language === code
-                    ? 'bg-[#1d1d1f] text-white'
-                    : 'text-[#1d1d1f]/60 hover:text-[#1d1d1f]'
+                    ? 'bg-[#0E0E0E] text-[#F5F2EC] border-[#0E0E0E]'
+                    : 'text-[rgba(14,14,14,0.68)] border-transparent hover:border-[rgba(14,14,14,0.22)] hover:text-[#0E0E0E]'
                 }`}
                 aria-current={language === code}
               >
@@ -70,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenChecklistModal && (
             <button
               onClick={onOpenChecklistModal}
-              className="hidden lg:inline-block text-xs font-medium text-[#1d1d1f]/70 hover:text-[#1d1d1f] transition-apple cursor-pointer"
+              className="hidden lg:inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E] transition-colors cursor-pointer"
             >
               Чеклист
             </button>
@@ -80,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
             href="https://t.me/sites_ai_tasks"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-apple cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-sm font-mono text-[11px] tracking-[0.16em] uppercase font-medium text-[#F5F2EC] bg-[#0E0E0E] hover:bg-[#C1440E] transition-colors cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Telegram</span>
