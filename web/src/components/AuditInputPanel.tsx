@@ -121,39 +121,45 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
   };
 
   return (
-    <section className="pt-8 sm:pt-16 pb-8">
+    <section className="pt-10 sm:pt-20 pb-8">
       <div className="max-w-3xl mx-auto">
         {/* Логотип-заголовок */}
-        <div className="flex justify-center mb-8 sm:mb-10">
+        <div className="flex justify-center mb-10 sm:mb-12">
           <img
             src={`${import.meta.env.BASE_URL}vitwill-logo.png`}
             alt="VITWILL"
-            className="h-14 sm:h-20 w-auto"
+            className="h-16 sm:h-20 w-auto grayscale hover:grayscale-0 transition-all duration-500"
           />
         </div>
 
-        {/* Крупный заголовок */}
-        <h1 className="text-center text-2xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#1d1d1f] mb-4 sm:mb-6">
-          {t.heading}
+        {/* Крупный заголовок с акцентом */}
+        <h1 className="text-center font-display text-[clamp(32px,5vw,52px)] font-medium tracking-[-0.04em] leading-[1.05] text-[#0E0E0E] mb-6">
+          {t.heading.split(' ').map((word, i) => 
+            word === 'сайта' || word === 'website' ? (
+              <em key={i} className="font-serif italic font-normal text-[#C1440E]">{word} </em>
+            ) : (
+              <span key={i}>{word} </span>
+            )
+          )}
         </h1>
 
-        <p className="text-center text-base sm:text-lg text-[#6e6e73] max-w-xl mx-auto mb-10 sm:mb-14 leading-relaxed">
+        <p className="text-center text-[16px] text-[rgba(14,14,14,0.68)] max-w-xl mx-auto mb-12 sm:mb-16 leading-relaxed">
           {t.subtitle}
         </p>
 
         {/* Баннер при исчерпании квоты */}
         {quotaExhausted ? (
           <div className="max-w-2xl mx-auto">
-            <div className="p-8 sm:p-10 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple text-center">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#fff3e0] flex items-center justify-center">
-                <Lock className="w-7 h-7 text-[#ff9500]" />
+            <div className="p-8 sm:p-10 bg-[#EFEBE3] rounded-sm border border-[rgba(14,14,14,0.22)] text-center">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#F5F2EC] border border-[rgba(14,14,14,0.14)] flex items-center justify-center">
+                <Lock className="w-6 h-6 text-[#C1440E]" />
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#1d1d1f] mb-3">
+              <h2 className="font-display text-2xl font-medium tracking-[-0.02em] text-[#0E0E0E] mb-3">
                 {t.exhaustedTitle}
               </h2>
 
-              <p className="text-sm sm:text-base text-[#6e6e73] leading-relaxed mb-8 max-w-md mx-auto">
+              <p className="text-[15px] text-[rgba(14,14,14,0.68)] leading-relaxed mb-8 max-w-md mx-auto">
                 {t.exhaustedText}
               </p>
 
@@ -161,7 +167,7 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                 href={telegramBotUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl text-base font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-apple cursor-pointer mb-3"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-sm font-mono text-[12px] tracking-[0.16em] uppercase font-medium text-[#F5F2EC] bg-[#0E0E0E] hover:bg-[#C1440E] transition-colors cursor-pointer mb-4"
               >
                 <span>{t.subscribeBtn}</span>
               </a>
@@ -170,7 +176,7 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="text-xs font-medium text-[#86868b] hover:text-[#1d1d1f] transition-apple cursor-pointer"
+                  className="font-mono text-[11px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)] hover:text-[#0E0E0E] transition-colors cursor-pointer"
                 >
                   {t.refreshBtn}
                 </button>
@@ -179,7 +185,7 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
           </div>
         ) : (
           <>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
@@ -187,14 +193,14 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   disabled={isLoading}
-                  className="flex-1 px-5 py-4 bg-white border border-[#d2d2d7] rounded-2xl text-base text-[#1d1d1f] placeholder-[#86868b] focus:outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-apple disabled:opacity-60"
+                  className="flex-1 px-5 py-4 bg-[#EFEBE3] border border-[rgba(14,14,14,0.22)] rounded-sm text-[16px] text-[#0E0E0E] placeholder-[rgba(14,14,14,0.45)] focus:outline-none focus:border-[#C1440E] focus:ring-1 focus:ring-[#C1440E] focus:bg-[#F5F2EC] transition-all disabled:opacity-60"
                   autoComplete="url"
                   spellCheck={false}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !urlInput.trim()}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-medium text-base bg-[#0071e3] hover:bg-[#0077ed] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-apple cursor-pointer whitespace-nowrap"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-sm font-mono text-[12px] tracking-[0.16em] uppercase bg-[#0E0E0E] hover:bg-[#C1440E] text-[#F5F2EC] disabled:opacity-40 disabled:hover:bg-[#0E0E0E] disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap"
                 >
                   {isLoading ? (
                     <>
@@ -211,14 +217,14 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
               </div>
 
               <div className="flex justify-center pt-2">
-                <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full">
+                <div className="inline-flex bg-[#EFEBE3] border border-[rgba(14,14,14,0.22)] rounded-sm p-1 gap-1">
                   <button
                     type="button"
                     onClick={() => onDeviceChange('mobile')}
-                    className={`px-4 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
+                    className={`px-6 py-2 font-mono text-[11px] tracking-[0.1em] uppercase rounded-sm transition-all cursor-pointer ${
                       device === 'mobile'
-                        ? 'bg-white text-[#1d1d1f] shadow-sm'
-                        : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                        ? 'bg-[#0E0E0E] text-[#F5F2EC]'
+                        : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
                     }`}
                   >
                     {t.mobile}
@@ -226,10 +232,10 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => onDeviceChange('desktop')}
-                    className={`px-4 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
+                    className={`px-6 py-2 font-mono text-[11px] tracking-[0.1em] uppercase rounded-sm transition-all cursor-pointer ${
                       device === 'desktop'
-                        ? 'bg-white text-[#1d1d1f] shadow-sm'
-                        : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                        ? 'bg-[#0E0E0E] text-[#F5F2EC]'
+                        : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
                     }`}
                   >
                     {t.desktop}
@@ -238,22 +244,22 @@ export const AuditInputPanel: React.FC<AuditInputPanelProps> = ({
               </div>
 
               {isLoading && loadingStepText && (
-                <div className="pt-4 flex items-center justify-center gap-3 text-sm text-[#6e6e73]">
-                  <Loader2 className="w-4 h-4 animate-spin text-[#0071e3]" />
+                <div className="pt-6 flex items-center justify-center gap-3 font-mono text-[11px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.68)]">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#C1440E]" />
                   <span>{loadingStepText}</span>
                 </div>
               )}
             </form>
 
             {!isLoading && (
-              <div className="pt-6 text-center">
+              <div className="pt-8 text-center">
                 {quotaUnlimited ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#34c759]">
+                  <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] uppercase text-[#1e5c2a]">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     {t.quotaUnlimited}
                   </span>
                 ) : quotaRemaining !== null ? (
-                  <span className="text-xs font-medium text-[#86868b]">
+                  <span className="font-mono text-[11px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)]">
                     {t.quotaRemaining}
                   </span>
                 ) : null}
