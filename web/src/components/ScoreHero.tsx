@@ -24,17 +24,16 @@ export const ScoreHero: React.FC<ScoreHeroProps> = ({
   const currentDevicePageSpeed =
     devicePageSpeed && devicePageSpeed[device] ? devicePageSpeed[device] : pageSpeed;
 
-  // Цветовая градация по оценке (мягкая, «яблочная»)
+  // Цветовая градация в стиле портфолио (глубокие, приглушенные тона)
   const getScoreColor = (score: number) => {
-    if (score >= 90) return { hex: '#34c759', label: language === 'en' ? 'Excellent' : language === 'de' ? 'Hervorragend' : 'Отлично' };
-    if (score >= 75) return { hex: '#0071e3', label: language === 'en' ? 'Good' : language === 'de' ? 'Gut' : 'Хорошо' };
-    if (score >= 50) return { hex: '#ff9500', label: language === 'en' ? 'Needs Attention' : language === 'de' ? 'Optimierungsbedarf' : 'Требует внимания' };
-    return { hex: '#ff3b30', label: language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично' };
+    if (score >= 90) return { hex: '#1e5c2a', label: language === 'en' ? 'Excellent' : language === 'de' ? 'Hervorragend' : 'Отлично' }; // Глубокий зеленый
+    if (score >= 75) return { hex: '#0E0E0E', label: language === 'en' ? 'Good' : language === 'de' ? 'Gut' : 'Хорошо' }; // Черный (как база)
+    if (score >= 50) return { hex: '#C1440E', label: language === 'en' ? 'Needs Attention' : language === 'de' ? 'Optimierungsbedarf' : 'Требует внимания' }; // Акцентный оранжевый
+    return { hex: '#8b1f29', label: language === 'en' ? 'Critical' : language === 'de' ? 'Kritisch' : 'Критично' }; // Темно-красный
   };
 
   const mainColor = getScoreColor(overallScore);
 
-  // Локализованный статус от LLM
   const getLocalizedStatus = (status: string): string => {
     const s = (status || '').toLowerCase();
     if (s.includes('отлич') || s.includes('excel') || s.includes('hervor')) return getScoreColor(95).label;
@@ -67,7 +66,6 @@ export const ScoreHero: React.FC<ScoreHeroProps> = ({
     },
   ];
 
-  // Кольцо прогресса
   const radius = 80;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallScore / 100) * circumference;
@@ -78,36 +76,36 @@ export const ScoreHero: React.FC<ScoreHeroProps> = ({
   return (
     <section className="max-w-4xl mx-auto">
       {/* ---------- URL + переключатель устройства ---------- */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-4 border-b border-[rgba(14,14,14,0.14)]">
         {url && (
-          <div className="text-sm font-mono text-[#6e6e73] truncate max-w-md">
+          <div className="font-mono text-[13px] text-[rgba(14,14,14,0.68)] truncate max-w-md">
             {url}
           </div>
         )}
         {onDeviceChange && (
-          <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full shrink-0">
+          <div className="inline-flex bg-[#EFEBE3] border border-[rgba(14,14,14,0.22)] rounded-sm p-1 shrink-0">
             <button
               type="button"
               onClick={() => onDeviceChange('mobile')}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer flex items-center gap-1.5 ${
+              className={`px-4 py-1.5 font-mono text-[11px] tracking-[0.1em] uppercase rounded-sm transition-all cursor-pointer flex items-center gap-1.5 ${
                 device === 'mobile'
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                  ? 'bg-[#0E0E0E] text-[#F5F2EC]'
+                  : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
               }`}
             >
-              <Smartphone className="w-3 h-3" />
+              <Smartphone className="w-3.5 h-3.5" />
               {language === 'en' ? 'Mobile' : language === 'de' ? 'Mobil' : 'Смартфон'}
             </button>
             <button
               type="button"
               onClick={() => onDeviceChange('desktop')}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-apple cursor-pointer flex items-center gap-1.5 ${
+              className={`px-4 py-1.5 font-mono text-[11px] tracking-[0.1em] uppercase rounded-sm transition-all cursor-pointer flex items-center gap-1.5 ${
                 device === 'desktop'
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                  ? 'bg-[#0E0E0E] text-[#F5F2EC]'
+                  : 'text-[rgba(14,14,14,0.68)] hover:text-[#0E0E0E]'
               }`}
             >
-              <Laptop className="w-3 h-3" />
+              <Laptop className="w-3.5 h-3.5" />
               {language === 'en' ? 'Desktop' : language === 'de' ? 'Desktop' : 'Компьютер'}
             </button>
           </div>
@@ -115,95 +113,92 @@ export const ScoreHero: React.FC<ScoreHeroProps> = ({
       </div>
 
       {/* ---------- Большое кольцо + оценка ---------- */}
-      <div className="flex flex-col items-center mb-10">
+      <div className="flex flex-col items-center mb-12">
         <div className="relative w-48 h-48 flex items-center justify-center mb-6">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
-            {/* Фон кольца */}
             <circle
               cx="100"
               cy="100"
               r={radius}
-              stroke="#f0f0f2"
-              strokeWidth="8"
+              stroke="#EFEBE3"
+              strokeWidth="4"
               fill="transparent"
             />
-            {/* Прогресс */}
             <circle
               cx="100"
               cy="100"
               r={radius}
               stroke={mainColor.hex}
-              strokeWidth="8"
+              strokeWidth="4"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
+              strokeLinecap="square"
               fill="transparent"
               className="transition-all duration-1000 ease-out"
             />
           </svg>
 
-          {/* Цифра внутри */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span
-              className="text-6xl font-semibold tracking-tight"
+              className="font-display text-[64px] leading-none font-medium tracking-[-0.04em]"
               style={{ color: mainColor.hex }}
             >
               {overallScore}
             </span>
-            <span className="text-xs text-[#86868b] mt-1 tracking-wide uppercase">
+            <span className="font-mono text-[10px] tracking-[0.2em] text-[rgba(14,14,14,0.45)] mt-2 uppercase">
               / 100
             </span>
           </div>
         </div>
 
-        {/* Статус под кольцом */}
         <div
-          className="text-sm font-medium mb-2"
+          className="font-mono text-[12px] tracking-[0.16em] uppercase mb-2"
           style={{ color: mainColor.hex }}
         >
           {statusLevel ? getLocalizedStatus(statusLevel) : mainColor.label}
         </div>
 
-        {/* Тип сайта */}
         {detectedSiteType && (
-          <div className="text-xs text-[#86868b]">
+          <div className="font-mono text-[11px] text-[rgba(14,14,14,0.45)]">
             {detectedSiteType}
           </div>
         )}
       </div>
 
       {/* ---------- Саммари ---------- */}
-      <div className="max-w-2xl mx-auto text-center mb-12">
-        <h2 className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-3">
+      <div className="max-w-2xl mx-auto text-center mb-14 pb-10 border-b border-[rgba(14,14,14,0.14)]">
+        <h2 className="font-serif italic text-xl text-[#C1440E] mb-4">
           {assessmentTitle}
         </h2>
-        <p className="text-base sm:text-lg leading-relaxed text-[#1d1d1f]">
+        <p className="text-[16px] leading-relaxed text-[rgba(14,14,14,0.68)]">
           {summary}
         </p>
       </div>
 
       {/* ---------- 4 блока по горизонтали ---------- */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {pillarCards.map((pillar) => {
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-[rgba(14,14,14,0.14)]">
+        {pillarCards.map((pillar, i) => {
           const color = getScoreColor(pillar.score);
           return (
             <button
               key={pillar.id}
               onClick={() => onSelectTab(pillar.id)}
-              className="group text-left p-5 bg-white rounded-2xl border border-[#e5e5e7] hover:border-[#d2d2d7] transition-apple cursor-pointer shadow-apple"
+              className={`group text-left p-6 bg-transparent hover:bg-[#EFEBE3] transition-all cursor-pointer ${
+                i !== 3 ? 'border-r border-b lg:border-b-0 border-[rgba(14,14,14,0.14)]' : ''
+              } ${i < 2 ? 'border-b lg:border-b-0 border-[rgba(14,14,14,0.14)]' : ''}`}
             >
-              <div className="text-xs text-[#6e6e73] font-medium mb-3">
+              <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-[rgba(14,14,14,0.45)] mb-6">
                 {pillar.title}
               </div>
               <div className="flex items-end justify-between">
                 <span
-                  className="text-3xl font-semibold tracking-tight"
+                  className="font-display text-[32px] leading-none font-medium tracking-[-0.03em]"
                   style={{ color: color.hex }}
                 >
                   {pillar.score}
-                  <span className="text-base text-[#86868b] font-normal ml-0.5">%</span>
+                  <span className="text-[16px] text-[rgba(14,14,14,0.45)] font-normal ml-1">%</span>
                 </span>
-                <ArrowUpRight className="w-4 h-4 text-[#d2d2d7] group-hover:text-[#0071e3] transition-apple" />
+                <ArrowUpRight className="w-5 h-5 text-[rgba(14,14,14,0.22)] group-hover:text-[#C1440E] transition-colors" />
               </div>
             </button>
           );
