@@ -196,7 +196,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-[#1d1d1f] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F5F2EC] text-[#0E0E0E] flex flex-col font-sans selection:bg-[#0E0E0E] selection:text-[#F5F2EC]">
       <Header
         language={language}
         onLanguageChange={handleLanguageChange}
@@ -205,7 +205,7 @@ export default function App() {
         onOpenChecklistModal={() => setIsChecklistModalOpen(true)}
       />
 
-      <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 max-w-[1200px]">
+      <main className="flex-1 w-full mx-auto px-5 md:px-10 py-10 space-y-12 max-w-[1440px]">
         <AuditInputPanel
           onStartAudit={executeAudit}
           isLoading={isLoading}
@@ -221,14 +221,14 @@ export default function App() {
         />
 
         {errorMessage && !quotaExhausted && (
-          <div className="max-w-2xl mx-auto p-4 bg-[#fff5f5] border border-[#ffdddd] rounded-2xl text-[#c41e3a] text-sm flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div className="max-w-2xl mx-auto p-4 bg-[#fdf2f2] border border-[#f5c2c7] rounded-sm text-[#8b1f29] text-sm flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-[#C1440E]" />
             <span className="leading-relaxed">{errorMessage}</span>
           </div>
         )}
 
         {auditResult && (
-          <div id="audit-results" className="space-y-12 pt-4">
+          <div id="audit-results" className="space-y-16 pt-4">
             <ScoreHero
               audit={auditResult}
               url={currentUrl || analyzedData?.url}
@@ -287,10 +287,10 @@ export default function App() {
               onOpenChecklistModal={() => setIsChecklistModalOpen(true)}
             />
 
-            <div className="flex justify-center pt-4 pb-8">
+            <div className="flex justify-center pt-8 pb-12 border-t border-[rgba(14,14,14,0.14)]">
               <button
                 onClick={handleReset}
-                className="text-sm font-medium text-[#0071e3] hover:text-[#0077ed] transition-apple cursor-pointer"
+                className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#C1440E] hover:text-[#0E0E0E] transition-colors cursor-pointer"
               >
                 ← Новый аудит
               </button>
@@ -299,13 +299,13 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-[#e5e5e7] py-6 text-center text-xs text-[#6e6e73]">
-        <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-[rgba(14,14,14,0.14)] py-10 text-center font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(14,14,14,0.45)]">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} Сайты для бизнеса | AI и задачи</p>
-          <div className="flex flex-wrap items-center justify-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-6">
             <button
               onClick={() => setIsChecklistModalOpen(true)}
-              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-apple cursor-pointer"
+              className="hover:text-[#0E0E0E] transition-colors cursor-pointer"
             >
               Чеклист
             </button>
@@ -313,7 +313,7 @@ export default function App() {
               href="https://t.me/sites_ai_tasks"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-apple"
+              className="hover:text-[#0E0E0E] transition-colors"
             >
               Telegram
             </a>
@@ -321,7 +321,7 @@ export default function App() {
               href="https://vk.ru/id1130637537"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-apple"
+              className="hover:text-[#0E0E0E] transition-colors"
             >
               ВКонтакте
             </a>
@@ -329,7 +329,7 @@ export default function App() {
               href="https://vitwill.github.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-apple"
+              className="hover:text-[#0E0E0E] transition-colors"
             >
               Портфолио
             </a>
