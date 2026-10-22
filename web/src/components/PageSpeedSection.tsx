@@ -34,69 +34,43 @@ export const PageSpeedSection: React.FC<PageSpeedSectionProps> = ({
 
   if (!activeMetrics) return null;
 
-  // Цветовая градация по шкале Lighthouse
   const getScoreColor = (score: number): string => {
-    if (score >= 90) return '#34c759'; // зелёный
-    if (score >= 50) return '#ff9500'; // оранжевый
-    return '#ff3b30'; // красный
+    if (score >= 90) return '#1e5c2a';
+    if (score >= 50) return '#C1440E';
+    return '#8b1f29';
   };
 
   const getRatingBadge = (rating: 'good' | 'needs-improvement' | 'poor') => {
     const labels = {
       good: language === 'en' ? 'Good' : language === 'de' ? 'Gut' : 'Хорошо',
-      'needs-improvement':
-        language === 'en' ? 'Needs work' : language === 'de' ? 'Verbessern' : 'Улучшить',
+      'needs-improvement': language === 'en' ? 'Needs work' : language === 'de' ? 'Verbessern' : 'Улучшить',
       poor: language === 'en' ? 'Poor' : language === 'de' ? 'Schlecht' : 'Плохо',
     };
-    const colors = {
-      good: { bg: 'bg-[#e8f8ee]', text: 'text-[#34c759]', icon: CheckCircle2 },
-      'needs-improvement': { bg: 'bg-[#fff3e0]', text: 'text-[#ff9500]', icon: AlertTriangle },
-      poor: { bg: 'bg-[#ffeceb]', text: 'text-[#ff3b30]', icon: XCircle },
+    
+    const config = {
+      good: { color: '#1e5c2a', icon: CheckCircle2 },
+      'needs-improvement': { color: '#C1440E', icon: AlertTriangle },
+      poor: { color: '#8b1f29', icon: XCircle },
     };
-    const config = colors[rating];
-    const Icon = config.icon;
+    
+    const { color, icon: Icon } = config[rating];
+
     return (
       <span
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${config.bg} ${config.text}`}
+        className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.1em] uppercase"
+        style={{ color }}
       >
-        <Icon className="w-3 h-3" />
+        <Icon className="w-3.5 h-3.5" />
         {labels[rating]}
       </span>
     );
   };
 
   const categories = [
-    {
-      title:
-        language === 'en'
-          ? 'Performance'
-          : language === 'de'
-          ? 'Leistung'
-          : 'Производительность',
-      score: activeMetrics.performanceScore,
-    },
-    {
-      title:
-        language === 'en'
-          ? 'Accessibility'
-          : language === 'de'
-          ? 'Barrierefreiheit'
-          : 'Доступность',
-      score: activeMetrics.accessibilityScore,
-    },
-    {
-      title:
-        language === 'en'
-          ? 'Best Practices'
-          : language === 'de'
-          ? 'Best Practices'
-          : 'Практики',
-      score: activeMetrics.bestPracticesScore,
-    },
-    {
-      title: 'SEO',
-      score: activeMetrics.seoScore,
-    },
+    { title: language === 'en' ? 'Performance' : language === 'de' ? 'Leistung' : 'Производительность', score: activeMetrics.performanceScore },
+    { title: language === 'en' ? 'Accessibility' : language === 'de' ? 'Barrierefreiheit' : 'Доступность', score: activeMetrics.accessibilityScore },
+    { title: language === 'en' ? 'Best Practices' : language === 'de' ? 'Best Practices' : 'Практики', score: activeMetrics.bestPracticesScore },
+    { title: 'SEO', score: activeMetrics.seoScore },
   ];
 
   const vitals = [
@@ -109,122 +83,57 @@ export const PageSpeedSection: React.FC<PageSpeedSectionProps> = ({
   ];
 
   const sectionTitle = 'PageSpeed & Core Web Vitals';
-
-  const sectionSubtitle =
-    language === 'en'
-      ? 'Load speed, layout stability and responsiveness'
-      : language === 'de'
-      ? 'Ladegeschwindigkeit, Layout-Stabilität und Reaktionsfähigkeit'
-      : 'Скорость загрузки, стабильность вёрстки и отзывчивость интерфейса';
-
-  const vitalTitle =
-    language === 'en'
-      ? 'Core Web Vitals'
-      : language === 'de'
-      ? 'Core Web Vitals'
-      : 'Ключевые метрики Core Web Vitals';
-
-  const diagTitle =
-    language === 'en'
-      ? 'Diagnostics & recommendations'
-      : language === 'de'
-      ? 'Diagnose & Empfehlungen'
-      : 'Диагностика и рекомендации по ускорению';
-
-  const deviceLabels = {
-    mobile:
-      language === 'en' ? 'Mobile' : language === 'de' ? 'Mobil' : 'Смартфон (Mobile)',
-    desktop:
-      language === 'en'
-        ? 'Desktop'
-        : language === 'de'
-        ? 'Desktop'
-        : 'Компьютер (Desktop)',
-  };
+  const sectionSubtitle = language === 'en' ? 'Load speed, layout stability and responsiveness' : language === 'de' ? 'Ladegeschwindigkeit, Layout-Stabilität und Reaktionsfähigkeit' : 'Скорость загрузки, стабильность вёрстки и отзывчивость интерфейса';
+  const vitalTitle = language === 'en' ? 'Core Web Vitals' : language === 'de' ? 'Core Web Vitals' : 'Ключевые метрики Core Web Vitals';
+  const diagTitle = language === 'en' ? 'Diagnostics & recommendations' : language === 'de' ? 'Diagnose & Empfehlungen' : 'Диагностика и рекомендации по ускорению';
 
   return (
     <section className="max-w-4xl mx-auto">
       {/* ---------- Заголовок секции ---------- */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-4 border-b border-[rgba(14,14,14,0.14)]">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-2">
+          <h2 className="font-display text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-[#0E0E0E] mb-2">
             {sectionTitle}
           </h2>
-          <p className="text-sm text-[#6e6e73]">{sectionSubtitle}</p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Переключатель Mobile/Desktop */}
-          <div className="inline-flex p-1 bg-[#f5f5f7] rounded-full">
-            <button
-              type="button"
-              onClick={() => onDeviceChange('mobile')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                device === 'mobile'
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-              }`}
-            >
-              {deviceLabels.mobile}
-            </button>
-            <button
-              type="button"
-              onClick={() => onDeviceChange('desktop')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-apple cursor-pointer ${
-                device === 'desktop'
-                  ? 'bg-white text-[#1d1d1f] shadow-sm'
-                  : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-              }`}
-            >
-              {deviceLabels.desktop}
-            </button>
-          </div>
+          <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.45)]">
+            {sectionSubtitle}
+          </p>
         </div>
       </div>
 
       {/* ---------- 4 кольца категорий ---------- */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-[rgba(14,14,14,0.14)] mb-12">
         {categories.map((cat, idx) => {
           const color = getScoreColor(cat.score);
-          const radius = 34;
+          const radius = 30;
           const circumference = 2 * Math.PI * radius;
           const offset = circumference - (cat.score / 100) * circumference;
 
           return (
             <div
               key={idx}
-              className="flex flex-col items-center p-6 bg-white rounded-3xl border border-[#e5e5e7] shadow-apple"
+              className={`flex flex-col items-center p-6 bg-transparent ${
+                idx !== 3 ? 'border-r border-b md:border-b-0 border-[rgba(14,14,14,0.14)]' : ''
+              } ${idx < 2 ? 'border-b md:border-b-0 border-[rgba(14,14,14,0.14)]' : ''}`}
             >
-              <div className="relative w-24 h-24 mb-4">
+              <div className="relative w-20 h-20 mb-4">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r={radius} stroke="#EFEBE3" strokeWidth="3" fill="transparent" />
                   <circle
-                    cx="40"
-                    cy="40"
-                    r={radius}
-                    stroke="#f0f0f2"
-                    strokeWidth="5"
-                    fill="transparent"
-                  />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r={radius}
-                    stroke={color}
-                    strokeWidth="5"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    fill="transparent"
+                    cx="40" cy="40" r={radius}
+                    stroke={color} strokeWidth="3"
+                    strokeDasharray={circumference} strokeDashoffset={offset}
+                    strokeLinecap="square" fill="transparent"
                     className="transition-all duration-1000 ease-out"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-semibold text-[#1d1d1f]">
+                  <span className="font-display text-2xl font-medium tracking-tight" style={{ color }}>
                     {cat.score}
                   </span>
                 </div>
               </div>
-              <span className="text-sm font-medium text-[#1d1d1f] text-center">
+              <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-[rgba(14,14,14,0.68)] text-center">
                 {cat.title}
               </span>
             </div>
@@ -233,32 +142,29 @@ export const PageSpeedSection: React.FC<PageSpeedSectionProps> = ({
       </div>
 
       {/* ---------- Core Web Vitals ---------- */}
-      <h3 className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-4">
+      <h3 className="font-mono text-[11px] tracking-[0.16em] uppercase text-[rgba(14,14,14,0.45)] mb-4">
         {vitalTitle}
       </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
         {vitals.map(({ metric }, idx) => (
-          <div
-            key={idx}
-            className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple"
-          >
+          <div key={idx} className="p-5 bg-[#EFEBE3] rounded-sm border border-[rgba(14,14,14,0.14)]">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-[#6e6e73] uppercase tracking-wide">
+              <span className="font-mono text-[11px] text-[rgba(14,14,14,0.45)] uppercase tracking-wide">
                 {metric.label}
               </span>
               {getRatingBadge(metric.rating)}
             </div>
-            <div className="text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-2">
+            <div className="font-display text-[28px] leading-none font-medium tracking-tight text-[#0E0E0E] mb-2">
               {metric.formatted}
             </div>
-            <p className="text-xs text-[#6e6e73] leading-relaxed">{metric.description}</p>
+            <p className="text-[13px] text-[rgba(14,14,14,0.68)] leading-relaxed">{metric.description}</p>
           </div>
         ))}
       </div>
 
       {/* ---------- Диагностика ---------- */}
-      <h3 className="text-xs font-medium uppercase tracking-widest text-[#86868b] mb-4">
+      <h3 className="font-mono text-[11px] tracking-[0.16em] uppercase text-[rgba(14,14,14,0.45)] mb-4">
         {diagTitle}
       </h3>
 
@@ -267,31 +173,28 @@ export const PageSpeedSection: React.FC<PageSpeedSectionProps> = ({
           const isGood = diag.score === 'good';
           const isWarn = diag.score === 'warning';
           const Icon = isGood ? CheckCircle2 : isWarn ? AlertTriangle : XCircle;
-          const color = isGood ? '#34c759' : isWarn ? '#ff9500' : '#ff3b30';
+          const color = isGood ? '#1e5c2a' : isWarn ? '#C1440E' : '#8b1f29';
 
           return (
-            <div
-              key={i}
-              className="p-5 bg-white rounded-2xl border border-[#e5e5e7] shadow-apple"
-            >
+            <div key={i} className="p-5 bg-[#EFEBE3] rounded-sm border border-[rgba(14,14,14,0.14)]">
               <div className="flex items-start gap-4">
                 <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color }} />
                 <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="text-sm font-medium text-[#1d1d1f]">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <span className="text-[15px] font-medium text-[#0E0E0E]">
                       {diag.title}
                     </span>
                     {diag.displayValue && (
-                      <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[#f5f5f7] text-[#6e6e73]">
+                      <span className="font-mono text-[11px] px-2 py-0.5 rounded-sm bg-[#F5F2EC] border border-[rgba(14,14,14,0.14)] text-[rgba(14,14,14,0.68)]">
                         {diag.displayValue}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#6e6e73] leading-relaxed">
+                  <p className="text-[13px] text-[rgba(14,14,14,0.68)] leading-relaxed">
                     {diag.description}
                   </p>
                   {diag.recommendation && (
-                    <p className="text-xs text-[#0071e3] mt-2 leading-relaxed">
+                    <p className="text-[13px] text-[#C1440E] mt-2 leading-relaxed">
                       {diag.recommendation}
                     </p>
                   )}
